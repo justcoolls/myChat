@@ -1,0 +1,85 @@
+body {
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: #00B7FF;
+}
+.message-window{
+    border:solid 1px #eee;
+    width: 800px;
+    height: 780px;
+    margin: auto;
+}
+.message-head{
+    background-color: #00B7FF;
+    height: 80px;
+}
+.message-group{
+    background-color:#eff7f5;
+    width: 25%;
+    height: 700px;
+    float:left;
+}
+.message-body{
+    height: 700px;
+    width: 75%;
+    float: right;
+}
+/*消息列表框*/
+.message-list-border{
+    overflow:hidden;
+    height:81%;
+    width: 600px;
+}
+.message-list{
+    padding-right: 20px ;
+    width: 105%;
+    height:100%;
+    overflow-y: scroll;
+}
+/*消息列表*/
+.message-list .message-li{
+    list-style-type:none;
+    margin: 3px ;
+    display:block;
+    overflow:hidden
+}
+/*消息框*/
+.message-list .message-li span{
+    border: solid 1px #eee;
+    padding: 5px 13px;
+    border-radius: 8px;
+    margin-right: 12px;
+    position: relative
+}
+.message-my{
+    display:block;
+    float:right;
+}
+.message-other{
+    display:block;
+    float:left;
+}
+
+/*头像*/
+.headPortrait{
+    border-radius: 25px;
+    width: 35px ;
+    height:35px ;
+    background-color: #eee;
+}
+/*消息输入*/
+.message-in{
+    border-top: solid 1px #eee;
+    height: 18%;
+}
+.message-input{
+    border:1px solid #fff;
+    outline:0;
+    width: 96%;
+    height: 91%;
+    margin: 4px 9px;
+    -web-kit-appearance:none;
+    -moz-appearance: none;
+}
