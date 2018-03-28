@@ -1,72 +1,81 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Form, Icon, Input, Button, Checkbox,message } from 'antd';
-const FormItem = Form.Item;
+import { Form, Icon,message} from 'antd';
+import Register from '../module/Register';
+import Login from '../module/Login';
+require('babel-polyfill');
+
 
 class NormalLoginForm extends React.Component {
-    handleSubmit = (e) => {
-        e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                // console.log('Received values of form: ', values);
-                $.ajax({
-                    type: "post",
-                    url: "/login",
-                    data: {
-                        username :values.userName,
-                        pwd : values.password
-                    },
-                    dataType: "json",
-                    async: false,
-                    success: function(data) {
-                        if(data.status=="success"){
-                            message.success('登录成功');
-                            window.location.href = "/index";
-                        }else if(data.status=="err"){
-                            message.error('用户名或密码错误');
-                        }
-                        console.log(data.status);
-
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                })
-            }
-        });
-    }
+    state={
+        signtop:0,
+        headerrow:0,
+        arrowleft:'none',
+        arrowright:'block',
+        revisibility:'hidden',
+        lovisibility:'visible'
+    };
+    toregister=()=>{
+        this.setState({
+            signtop:-275,
+            headerrow:-500,
+            arrowleft:'block',
+            arrowright:'none',
+            revisibility:'visible',
+            lovisibility:'hidden'
+        })
+    };
+    tologin=()=>{
+        this.setState({
+            signtop:0,
+            headerrow:0,
+            arrowleft:'none',
+            arrowright:'block',
+            revisibility:'hidden',
+            lovisibility:'visible'
+        })
+    };
     render() {
         const { getFieldDecorator } = this.props.form;
         return (
-            <Form onSubmit={this.handleSubmit} className="login-form">
-                <FormItem>
-                    {getFieldDecorator('userName', {
-                        rules: [{ required: true, message: 'Please input your username!' }],
-                    })(
-                        <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Username" />
-                    )}
-                </FormItem>
-                <FormItem>
-                    {getFieldDecorator('password', {
-                        rules: [{ required: true, message: 'Please input your Password!' }],
-                    })(
-                        <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder="Password" />
-                    )}
-                </FormItem>
-                <FormItem>
-                    {getFieldDecorator('remember', {
-                        valuePropName: 'checked',
-                        initialValue: true,
-                    })(
-                        <Checkbox>Remember me</Checkbox>
-                    )}
-                    <a className="login-form-forgot" href="">Forgot password</a>
-                    <Button type="primary" htmlType="submit" className="login-form-button">
-                        Log in
-                    </Button>
-                    Or <a href="">register now!</a>
-                </FormItem>
-            </Form>
+            <div className="chat-sign">
+                <div className="chat-sign-form">
+                    <div className="sign-form">
+                        <div className="sign-header">
+                            <div className="sign-left" onClick={this.tologin} style={{display:this.state.arrowleft}}>
+                                <a>
+                                    登录
+                                    <Icon type="arrow-left" />
+                                </a>
+
+                            </div>
+                            <div className="sign-header-row" style={{marginLeft:this.state.headerrow}}>
+                                <div className="sign-header-name" >登录</div>
+                                <div className="sign-header-name" >注册</div>
+                            </div>
+
+                            <div className="sign-right" onClick={this.toregister} style={{display:this.state.arrowright}}>
+                                <a>
+                                    <Icon type="arrow-right" />
+                                    注册
+                                </a>
+                            </div>
+
+                        </div>
+                        <div style={{height:33}}/>
+                        <div style={{height:236,overflow:'hidden'}}>
+                            <div className="sign-body" style={{marginTop:this.state.signtop}}>
+                                <div className="sign-con" style={{height:175,visibility:this.state.lovisibility}}>
+                                    <Login/>
+                                </div>
+                                <div className="sign-con" style={{height:233,marginTop:100,visibility:this.state.revisibility}}>
+                                    <Register/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     }
 }
