@@ -1,3 +1,4 @@
-
 /.idea
 /static/output
+/node_modules
+/package-lock.json
