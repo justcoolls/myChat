@@ -7,7 +7,7 @@ module.exports = {
     entry: {
         'index' : './static/src/apps/index.js',
         'login' : './static/src/apps/login.js',
-        vendor: ['react', 'react-dom', 'whatwg-fetch','babel-polyfill'],
+        vendor: ['react', 'react-dom'],
     },
     output: {
         path: outputPath,

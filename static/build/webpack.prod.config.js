@@ -1,6 +1,6 @@
-var webpack = require('webpack');
-var merge = require('webpack-merge');
-var baseWebpackConfig = require('./webpack.base.config');
+let webpack = require('webpack');
+let merge = require('webpack-merge');
+let baseWebpackConfig = require('./webpack.base.config');
 
 module.exports = merge(baseWebpackConfig, {
   // eval-source-map is faster for development

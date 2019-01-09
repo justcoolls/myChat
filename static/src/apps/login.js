@@ -15,6 +15,24 @@ class NormalLoginForm extends React.Component {
         revisibility:'hidden',
         lovisibility:'visible'
     };
+    componentDidMount(){
+        // fetch("/moLogin", {
+        //     method: "GET",
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        //     credentials: 'include',
+        // }).then(res=>{
+        //     return res.json();
+        // }).then(data=>{
+        //     if(data.status=="success"){
+        //         message.info('登陆成功');
+        //         window.location.href = "/mychat/";
+        //     }else if(data.status=="err"){
+        //         message.info('请登录');
+        //     }
+        // }).catch(err=>console.log(err));
+    }
     toregister=()=>{
         this.setState({
             signtop:-275,
