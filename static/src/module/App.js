@@ -5,8 +5,8 @@ import UserInfor from './userInformation';
 const TabPane = Tabs.TabPane;
 const emoji=require('./emoji');
 const chats=require('./chat');
-const socket = io('http://120.79.183.31:3001',{
-// const socket = io('http://127.0.0.1:3001',{
+// const socket = io('http://120.79.183.31:3001',{
+const socket = io('http://127.0.0.1:3001',{
     query: 'token=' + getCookie(),
 });
 const Search = Input.Search;
