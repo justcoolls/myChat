@@ -4,15 +4,11 @@ const FormItem = Form.Item;
 
 
 class NormalRegisterForm extends React.Component{
-    state = {
-        confirmDirty: false,
-    };
 
     loginSubmit = (e) => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                // console.log('Received values of form: ', values);
                 let data={
                     username :values.userNamel,
                     pwd : values.passwordl

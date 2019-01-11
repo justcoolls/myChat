@@ -27,11 +27,29 @@ body,#login{
     overflow: hidden;
 }
 .sign-form input{
-    border-radius:30px ;
-}
-.sign-form button{
-    border-radius:30px ;
+    border-radius: 5px;
     width: 100%;
+    height: 30px;
+    margin: 8px 0;
+    border: 1px #fff solid;
+    padding: 0 10px;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    -webkit-box-sizing:border-box; /* Safari */
+}
+
+.sign-form .submit{
+    border-radius: 4px;
+    width: 100%;
+    color: #fff;
+    background-color: #108ee9;
+    text-align: center;
+    margin: 10px auto;
+    height: 36px;
+    line-height:  36px;
+}
+.sign-form .submit:hover{
+    background-color: #48a1e9;
 }
 .sign-form .sign-header{
     height: 63px;

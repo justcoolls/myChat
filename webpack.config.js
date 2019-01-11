@@ -1,11 +1,7 @@
 const path = require('path');
-// const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-// const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 module.exports = (env) => {
     return {
         entry: {
@@ -23,41 +19,6 @@ module.exports = (env) => {
         resolve: {
             extensions: ['.js', '.jsx', '.css', '.json', '*'],
         },
-        // optimization: {
-        //     splitChunks: {
-        //         cacheGroups: {
-        //             commons: {
-        //                 chunks: 'all',
-        //                 minChunks: 2,
-        //                 priority: -20,
-        //                 maxInitialRequests: 5,
-        //                 minSize: 0,
-        //                 name: 'common'
-        //             },
-        //             module: {
-        //                 chunks: 'all',
-        //                 minChunks: 2,
-        //                 test: /[\\/]node_modules[\\/]/,
-        //                 priority: -10,
-        //                 name: 'module'
-        //             },
-        //             antd: {
-        //                 chunks: 'all',
-        //                 minChunks: 2,
-        //                 test: /antd/,
-        //                 priority: -5,
-        //                 name: 'antd'
-        //             },
-        //             react: {
-        //                 chunks: 'all',
-        //                 minChunks: 2,
-        //                 test: /react/,
-        //                 priority: -5,
-        //                 name: 'react'
-        //             }
-        //         }
-        //     }
-        // },
         module: {
             rules: [
                 {
@@ -65,7 +26,7 @@ module.exports = (env) => {
                     use: {
                         loader: "babel-loader",
                         options: {
-                            // presets: ['env', 'react', 'stage-2'],
+                            presets: ['env', 'react', 'stage-2'],
                         }
                     },
                     exclude: /node_modules/
@@ -77,6 +38,7 @@ module.exports = (env) => {
                         {loader: 'css-loader'}
                     ]
                 },
+
             ]
         },
         plugins: [
@@ -100,7 +62,7 @@ module.exports = (env) => {
                 chunks: ['login'],
                 template: './static/views/login.ejs',
                 filename: './views/login.ejs',
-            }),
+            })
         ],
         performance: {
             hints: env === 'production' ? false : 'warning',
