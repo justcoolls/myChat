@@ -1,10 +1,15 @@
-body,#login{
-    height: 100%;
+html,body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-size: cover;
 }
+#login{
+     height: 100%;
+ }
 .chat-sign{
     min-height: 100%;
     border-top: solid 0.1px #fff;
-    background-color: #111;
     background-image: url(/public/img/bgh.jpg);
     background-size: 1920px 1030px;
 }

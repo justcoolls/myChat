@@ -12,10 +12,14 @@ function getCookie(cookies)
     else
         return null;
 }
-// router.prefix('/login');
 router.get('/', async (ctx, next)=> {
+    await ctx.render('index');
+});
+
+router.get('/login', async (ctx, next) => {
     await ctx.render('login');
 });
+
 ages=(str)=>{
     let   r   =   str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
     if(r==null)return   false;

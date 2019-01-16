@@ -2,7 +2,6 @@ const router = require('koa-router')();
 const jwt = require('jsonwebtoken');
 const surveyDao= require('../dao/surveyDao');
 const userDao = require('../dao/userDao');
-router.prefix('/mychat');
 function getCookie(cookies)
 {
     if(cookies){
@@ -16,7 +15,7 @@ function getCookie(cookies)
     }
 
 }
-
+router.prefix('/mychat');
 router.all('/',async (ctx, next)=>{
     let token;
     let cookies=ctx.header.cookie;
@@ -35,13 +34,6 @@ router.all('/',async (ctx, next)=>{
         await next();
     }
 });
-
-router.get('/', async (ctx, next) => {
-  await ctx.render('index', {
-    title: 'myChat'
-  })
-});
-
 router.post('/mesSave', async (ctx, next) => {
     let res= new Object();
     let formData = ctx.request.body;

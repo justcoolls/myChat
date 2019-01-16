@@ -26,7 +26,7 @@ module.exports = (env) => {
                     use: {
                         loader: "babel-loader",
                         options: {
-                            presets: ['env', 'react', 'stage-2'],
+                            presets: ['env', 'react', 'stage-0'],
                         }
                     },
                     exclude: /node_modules/
@@ -55,13 +55,13 @@ module.exports = (env) => {
             ]),
             new HtmlWebpackPlugin({
                 chunks: ['index'],
-                template: './static/views/index.ejs',
-                filename: './views/index.ejs',
+                template: './static/views/index.html',
+                filename: './views/index.html',
             }),
             new HtmlWebpackPlugin({
                 chunks: ['login'],
-                template: './static/views/login.ejs',
-                filename: './views/login.ejs',
+                template: './static/views/login.html',
+                filename: './views/login.html',
             })
         ],
         performance: {

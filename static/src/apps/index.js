@@ -6,9 +6,7 @@ require('babel-polyfill');
 import App from '../module/App';
 ReactDOM.render(
     (<HashRouter>
-        <App>
-            {/*<Route exact path="/" component={workStation}/>*/}
-        </App>
+        <App/>
     </HashRouter>),
     document.getElementById('root')
 );

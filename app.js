@@ -6,7 +6,6 @@ const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
 const logger = require('koa-logger');
 const jwt = require('koa-jwt');
-const mongoose = require('mongoose');
 const index = require('./routes/index');
 const users = require('./routes/users');
 const group = require('./routes/group');
@@ -23,7 +22,7 @@ app.use(logger());
 app.use(require('koa-static')(__dirname + '/build'));
 
 app.use(views(__dirname + '/build/views', {
-  extension: 'ejs'
+  extension: 'html'
 }));
 
 // logger
@@ -33,11 +32,6 @@ app.use(async (ctx, next) => {
   const ms = new Date() - start;
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 });
-// session
-// mongoose.connect(DB_URL,{useMongoClient:true});
-// app.use(session({
-//     store: new MongooseStore()
-// }));
 
 app.use(jwt({ secret: 'jwtSecret', passthrough:true }));
 // routes
