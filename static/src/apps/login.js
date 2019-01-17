@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {message} from "antd/lib/index";
-
 class App extends React.Component {
     constructor(props) {
         super(props)
@@ -134,7 +132,7 @@ class App extends React.Component {
     loginSubmit = () => {
         const {user, password} = this.state;
         const data = {
-            username: user,
+            userName: user,
             pwd: password
         };
         fetch("/login", {
@@ -150,7 +148,7 @@ class App extends React.Component {
             if (data.status === "success") {
 
                 document.cookie = "token=" + data.token;
-                window.location.href = "/mychat";
+                window.location.href = "/";
             } else if (data.status === "err") {
                 console.error('用户名或密码错误');
             }
@@ -168,7 +166,7 @@ class App extends React.Component {
             return false
         }
         const data = {
-            username: regUser,
+            userName: regUser,
             pwd: regPassword
         };
         fetch("/register", {
@@ -183,7 +181,7 @@ class App extends React.Component {
         }).then(data => {
             if (data.status === "success") {
                 document.cookie = "token=" + data.token;
-                window.location.href = "/myChat";
+                window.location.href = "/";
             } else if (data.status === "lengtherr") {
                 console.info('用户名不能少于三位数');
             } else if (data.status === "err") {

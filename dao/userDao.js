@@ -35,7 +35,7 @@ const userDao=  mongoose.model('users', userSchema);
 mongoose.connect(DB_URL,options);
 module.exports ={
     login: async (formData)=>{
-        let name = formData.username;
+        let name = formData.userName;
         let password = formData.pwd;
         let md5 = crypto.createHash("md5");
         let newPas = md5.update(password).digest("hex");
@@ -47,7 +47,7 @@ module.exports ={
         }
     },
     verifyUser:async (formData)=>{
-        let name = formData.username;
+        let name = formData.userName;
         let namePwd = {name: name};
         try {
             return await  userDao.findOne(namePwd);
@@ -56,7 +56,7 @@ module.exports ={
         }
     },
     register: async (formData)=>{
-            let name = formData.username;
+            let name = formData.userName;
             let password = formData.pwd;
             let md5 = crypto.createHash("md5");
             let newPas = md5.update(password).digest("hex");

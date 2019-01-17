@@ -231,10 +231,10 @@ class UserInfor extends React.Component{
 render(){
     return(
         <div>
-            <img className="useravatar" id="useravatar" onClick={this.userClick} style={{height:60,width:60,borderRadius:65,margin:8,}} src={this.state.avatar}/>
+            <img className="userAvatar" id="userAvatar" onClick={this.userClick} style={{height:60,width:60,borderRadius:65,margin:8,}} src={this.state.avatar}/>
             <div className="userinf" style={{opacity:this.state.opacity,transform:this.state.scales,visibility:this.state.visistatus}}>
                 <img className="userheader"  src={this.state.avatar}/>
-                <div className="username" id="username">{this.state.name}</div>
+                <div className="userName" id="userName">{this.state.name}</div>
                 {this.infor()}
             </div>
             <div className="backmark" onClick={this.userhide} style={{display:this.state.userinfor}}/>

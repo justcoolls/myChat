@@ -6,13 +6,34 @@ const jwt = require('jsonwebtoken');
 
 function getCookie(cookies)
 {
+    if(!cookies){
+        return null
+    }
     let arr,reg=new RegExp("(^| )"+'token'+"=([^;]*)(;|$)");
     if(arr=cookies.match(reg))
         return unescape(arr[2]);
     else
         return null;
 }
-router.get('/', async (ctx, next)=> {
+router.all('/',async (ctx, next)=>{
+    let token;
+    let cookies=ctx.header.cookie;
+    token=getCookie(cookies);
+    if(!token){
+        await ctx.redirect('/login');
+    }else{
+        try{
+            let user = jwt.verify(token, 'jwtSecret').name;
+        }
+        catch (e){
+            console.log("~~~~~~~~~~~~~~~~~~"+e)
+            await ctx.redirect('/login');
+            return;
+        }
+        await next();
+    }
+});
+router.get('/', async (ctx)=> {
     await ctx.render('index');
 });
 
@@ -24,7 +45,7 @@ ages=(str)=>{
     let   r   =   str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
     if(r==null)return   false;
     let   d=   new   Date(r[1],   r[3]-1,   r[4]);
-    if   (d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4])
+    if   (d.getFullYear()===r[1]&&(d.getMonth()+1)===r[3]&&d.getDate()===r[4])
     {
         let   Y   =   new   Date().getFullYear();
         return((Y-r[1]));
@@ -33,9 +54,9 @@ ages=(str)=>{
 router.post("/login",async (ctx)=>{
     let formData = ctx.request.body;
     let resultData= await userDao.login(formData);
-    let res= new Object();
+    let res= {};
     let profile = {
-        name: formData.username,
+        name: formData.userName,
     };
     if(resultData!=null){
         let token = jwt.sign(profile, 'jwtSecret', {expiresIn: '10d'});
@@ -48,8 +69,8 @@ router.post("/login",async (ctx)=>{
 });
 router.post("/register",async (ctx)=>{
     let formData = ctx.request.body;
-    let res= new Object();
-    let userlen=formData.username.length;
+    let res= {};
+    let userlen=formData.userName.length;
     if(userlen<3){
         res.status="lengtherr";
     }else {
@@ -58,15 +79,14 @@ router.post("/register",async (ctx)=>{
         if(verifyUser==null){
             let resultData= await userDao.register(formData);
             let profile = {
-                name: formData.username,
+                name: formData.userName,
             };
-            if(resultData == 'suc'){
-                let Groupdata= new Object();
-                Groupdata.user=formData.username;
+            if(resultData === 'suc'){
+                let Groupdata= {};
+                Groupdata.user=formData.userName;
                 Groupdata.name="talk";
                 await groupDao.addGroup(Groupdata);
-                let token = jwt.sign(profile, 'jwtSecret', {expiresIn: '10d'});
-                res.token=token;
+                res.token=jwt.sign(profile, 'jwtSecret', {expiresIn: '10d'});;
                 res.status="success";
             }else {
                 res.status="err";
@@ -83,7 +103,7 @@ router.get("/moLogin",async (ctx)=>{
     let cookies=ctx.header.cookie;
     token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
-    let res= new Object();
+    let res= {};
     if(user){
         res.status="success";
     }else{
@@ -95,7 +115,7 @@ router.get("/moLogin",async (ctx)=>{
 router.post("/informavatar",async (ctx)=>{
     let user = ctx.request.body.name;
     let resultData= await userDao.informa(user);
-    let res= new Object();
+    let res= {};
     if(resultData.length>0){
         res.status="success";
         res.avatar=resultData[0]._doc.avatar;
@@ -110,7 +130,7 @@ router.get("/userinform",async (ctx)=>{
     token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
     let resultData= await userDao.userinform(user);
-    let res= new Object();
+    let res= {};
     if(resultData.length>0){
         res.status="success";
         res.avatar=resultData[0]._doc.avatar;
@@ -153,59 +173,59 @@ router.get("/userinform",async (ctx)=>{
 router.post("/userinforo",async (ctx)=>{
     let user = ctx.request.body.user;
     let resultData= await userDao.userinform(user);
-    let res= new Object();
+    let res= {};
     if(resultData.length>0){
         let data=[];
         res.status="success";
 
         if(resultData[0]._doc.sex){
-            let content= new Object();
+            let content= {};
             content.name="性别";
             content.value=resultData[0]._doc.sex;
             data.push(content);
         }else {
-            let content= new Object();
+            let content= {};
             content.name="性别";
             content.value="未知";
             data.push(content);
         }
         if(resultData[0]._doc.location){
-            let content= new Object();
+            let content= {};
             content.name="位置";
             content.value=resultData[0]._doc.location;
             data.push(content);
         }else {
-            let content= new Object();
+            let content= {};
             content.name="位置";
             content.value="火星";
             data.push(content);
         }
         if(resultData[0]._doc.age){
             let age=ages(resultData[0]._doc.age);
-            let content= new Object();
+            let content= {};
             content.name="年龄";
             content.value=age;
             data.push(content);
         }else {
-            let content= new Object();
+            let content= {};
             content.name="年龄";
             content.value="0";
             data.push(content);
         }
         if(resultData[0]._doc.email){
-            let content= new Object();
+            let content= {};
             content.name="邮件";
             content.value=resultData[0]._doc.email;
             data.push(content);
         }
         if(resultData[0]._doc.gitHub){
-            let content= new Object();
+            let content= {};
             content.name="GitHub";
             content.value=resultData[0]._doc.gitHub;
             data.push(content);
         }
         if(resultData[0]._doc.personalWeb){
-            let content= new Object();
+            let content= {};
             content.name="个人网站";
             content.value=resultData[0]._doc.personalWeb;
             data.push(content);
@@ -223,10 +243,9 @@ router.post("/upuser",async (ctx)=>{
     let token;
     let cookies=ctx.header.cookie;
     token=getCookie(cookies);
-    let user=jwt.verify(token, 'jwtSecret').name;
-    formData.user=user;
+    formData.user=jwt.verify(token, 'jwtSecret').name;
     let resultData= await userDao.updateform(formData);
-    let res= new Object();
+    let res= {};
     if(resultData.length>0){
         res.status="success";
     }else{
@@ -241,12 +260,12 @@ router.get("/ugroupfind",async (ctx)=>{
     token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
     let resultData= await userDao.ugroupfind(user);
-    let res= new Object();
+    let res= {};
     let groups= [];
     if(resultData){
         let len=resultData.groups.length;
         for(let i=0;i<len;i++){
-            let groupO= new Object();
+            let groupO= {};
             let groupname=resultData.groups[i];
             groupO.group=groupname;
             groupO.Badge=0;
