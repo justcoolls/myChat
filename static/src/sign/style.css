@@ -10,7 +10,7 @@ html,body {
 .chat-sign{
     min-height: 100%;
     border-top: solid 0.1px #fff;
-    background-image: url(/public/img/bgh.jpg);
+    /*background-image: url(/public/img/bgh.jpg);*/
     background-size: 1920px 1030px;
 }
 #back-canvas{

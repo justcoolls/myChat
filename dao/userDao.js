@@ -41,7 +41,7 @@ module.exports ={
         let newPas = md5.update(password).digest("hex");
         let namePwd = {name: name,password: newPas};
         try {
-        return await  userDao.findOne(namePwd);
+            return await  userDao.findOne(namePwd);
         } catch (e) {
             console.log(e);
         }

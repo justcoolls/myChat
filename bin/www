@@ -9,11 +9,12 @@ const debug = require('debug')('demo:server');
 const http = require('http');
 const socketioJwt = require('socketio-jwt');
 const socketRoutes=require('./socket');
+const config=require('../config/config');
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3001');
+const port = normalizePort(config.server.port);
 // app.set('port', port);
 
 /**

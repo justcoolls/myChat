@@ -37,7 +37,8 @@ router.get('/', async (ctx)=> {
     await ctx.render('index');
 });
 
-router.get('/login', async (ctx, next) => {
+router.get('/login', async (ctx) => {
+    ctx.set('Cache-control', 'max-age=31536000')
     await ctx.render('login');
 });
 
@@ -74,7 +75,8 @@ router.post("/register",async (ctx)=>{
     if(userlen<3){
         res.status="lengtherr";
     }else {
-        let verifyUser= await userDao.verifyUser(formData);
+        // let verifyUser= await userDao.verifyUser(formData);
+        let verifyUser= null
 
         if(verifyUser==null){
             let resultData= await userDao.register(formData);

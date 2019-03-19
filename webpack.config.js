@@ -2,16 +2,17 @@ const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = (env) => {
     return {
         entry: {
-            'index' : './static/src/apps/index.js',
-            'login' : './static/src/apps/login.js',
+            'index': './static/src/apps/index.js',
+            'login': './static/src/apps/login.js',
         },
         mode: env,
         devtool: env === 'development' ? 'cheap-module-eval-source-map' : 'cheap-module-source-map',
         output: {
-            filename: 'js/[name].bundle.js',
+            filename: env === 'development' ? 'js/[name].bundle.js' : 'js/[name].[chunkhash:5].bundle.js',
             path: path.resolve(__dirname, 'build'),
             chunkFilename: 'js/chunck/[chunkhash:8].chunk.js',
             publicPath: '/'
@@ -30,15 +31,13 @@ module.exports = (env) => {
                         }
                     },
                     exclude: /node_modules/
-                },
-                {
+                }, {
                     test: /\.css$/,
-                    use: [
-                        {loader: 'style-loader'},
-                        {loader: 'css-loader'}
-                    ]
-                },
-
+                    use: ExtractTextPlugin.extract({
+                        use: 'css-loader',
+                        fallback: 'style-loader'
+                    })
+                }
             ]
         },
         plugins: [
@@ -49,8 +48,8 @@ module.exports = (env) => {
             }),
             new CopyWebpackPlugin([ // 复制插件
                 {
-                    from: path.join(__dirname,'/static/public'),
-                    to:  path.join(__dirname,'build/public')
+                    from: path.join(__dirname, '/static/public'),
+                    to: path.join(__dirname, 'build/public')
                 }
             ]),
             new HtmlWebpackPlugin({
@@ -62,7 +61,11 @@ module.exports = (env) => {
                 chunks: ['login'],
                 template: './static/views/login.html',
                 filename: './views/login.html',
-            })
+            }),
+            new ExtractTextPlugin({
+                filename:'styles/[name].[hash:8].css',
+                allChunks: true
+            }),
         ],
         performance: {
             hints: env === 'production' ? false : 'warning',
