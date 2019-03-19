@@ -122,7 +122,7 @@ module.exports ={
             });
         });
     },
-    ugroupfind:async (formData)=>{
+    groupList:async (formData)=>{
         let name = formData;
         let namePwd = {name: name};
         try {

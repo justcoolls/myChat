@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 //引入模板
-import App from '../module/App';
+import App from './app';
 ReactDOM.render(
     <App/>,
-    document.getElementById('root')
+    document.getElementById('login')
 );
-

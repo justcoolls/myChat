@@ -21,7 +21,7 @@ app.use(json());
 app.use(logger());
 app.use(require('koa-static')(__dirname + '/build'));
 
-app.use(views(__dirname + '/build/views', {
+app.use(views(__dirname + '/build/templates', {
   extension: 'html'
 }));
 

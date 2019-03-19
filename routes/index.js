@@ -14,7 +14,7 @@ function getCookie(cookies)
         return null;
     }
 }
-router.prefix('/mychat');
+router.prefix('/myChat');
 router.post('/mesSave', async (ctx, next) => {
     let res= {};
     let formData = ctx.request.body;

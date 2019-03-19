@@ -6,8 +6,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = (env) => {
     return {
         entry: {
-            'index': './static/src/apps/index.js',
-            'login': './static/src/apps/login.js',
+            'index': './static/src/apps/main.js',
+            'login': './static/src/login/main.js',
         },
         mode: env,
         devtool: env === 'development' ? 'cheap-module-eval-source-map' : 'cheap-module-source-map',
@@ -37,7 +37,15 @@ module.exports = (env) => {
                         use: 'css-loader',
                         fallback: 'style-loader'
                     })
-                }
+                },
+                {
+                    test: /\.less$/,
+                    use: [
+                        {loader: 'style-loader'},
+                        {loader: 'css-loader'},
+                        {loader: 'less-loader'}
+                    ]
+                },
             ]
         },
         plugins: [
@@ -54,13 +62,13 @@ module.exports = (env) => {
             ]),
             new HtmlWebpackPlugin({
                 chunks: ['index'],
-                template: './static/views/index.html',
-                filename: './views/index.html',
+                template: './static/templates/index.html',
+                filename: './templates/index.html',
             }),
             new HtmlWebpackPlugin({
                 chunks: ['login'],
-                template: './static/views/login.html',
-                filename: './views/login.html',
+                template: './static/templates/login.html',
+                filename: './templates/login.html',
             }),
             new ExtractTextPlugin({
                 filename:'styles/[name].[hash:8].css',

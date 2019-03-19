@@ -26,7 +26,6 @@ router.all('/',async (ctx, next)=>{
             let user = jwt.verify(token, 'jwtSecret').name;
         }
         catch (e){
-            console.log("~~~~~~~~~~~~~~~~~~"+e)
             await ctx.redirect('/login');
             return;
         }
@@ -34,11 +33,9 @@ router.all('/',async (ctx, next)=>{
     }
 });
 router.get('/', async (ctx)=> {
-    await ctx.render('index');
+    await ctx.render('/');
 });
-
-router.get('/login', async (ctx) => {
-    ctx.set('Cache-control', 'max-age=31536000')
+router.get('/login', async (ctx)=> {
     await ctx.render('login');
 });
 
@@ -100,20 +97,6 @@ router.post("/register",async (ctx)=>{
 
     return ctx.body=JSON.stringify(res);
 });
-router.get("/moLogin",async (ctx)=>{
-    let token;
-    let cookies=ctx.header.cookie;
-    token=getCookie(cookies);
-    let user=jwt.verify(token, 'jwtSecret').name;
-    let res= {};
-    if(user){
-        res.status="success";
-    }else{
-        res.status="err";
-    }
-    return ctx.body=JSON.stringify(res);
-});
-
 router.post("/informavatar",async (ctx)=>{
     let user = ctx.request.body.name;
     let resultData= await userDao.informa(user);
@@ -256,12 +239,12 @@ router.post("/upuser",async (ctx)=>{
     return ctx.body=JSON.stringify(res);
 });
 
-router.get("/ugroupfind",async (ctx)=>{
+router.get("/groupList",async (ctx)=>{
     let token;
     let cookies=ctx.header.cookie;
     token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
-    let resultData= await userDao.ugroupfind(user);
+    let resultData= await userDao.groupList(user);
     let res= {};
     let groups= [];
     if(resultData){

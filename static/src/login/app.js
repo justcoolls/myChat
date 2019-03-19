@@ -1,6 +1,6 @@
 import React from 'react';
 // import 'babel-polyfill'
-import './style.css'
+import './style.less'
 class App extends React.Component {
     constructor(props) {
         super(props)
