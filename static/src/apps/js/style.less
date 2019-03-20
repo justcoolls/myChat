@@ -4,12 +4,59 @@ html,body,#root{
     min-height: 100vh;
     background-size: cover;
 }
+.scrollbar::-webkit-scrollbar{
+    width:9px;
+    height:9px;
+}
+.scrollbar::-webkit-scrollbar-button {
+    width:0;
+    height:0;
+}
+.scrollbar::-webkit-scrollbar-track {
+    background: #eee;
+    border-radius: 20px;
+
+}
+.scrollbar::-webkit-scrollbar-track-piece {
+    background: #eee;
+    border-radius: 20px;
+}
+.scrollbar::-webkit-scrollbar-thumb{
+    background:#aaa;
+    border-radius:50px;
+}
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background:#85868B;
+}
+.scrollbar::-webkit-scrollbar-corner      {
+    background:#fff;
+}
 .chat-index {
     margin: 0;
     padding: 0;
     min-height: 100vh;
     background-size: cover;
-    background-color: #eee;
+    input{
+        -web-kit-appearance:none;
+        -moz-appearance: none;
+        outline:0;
+        border-radius: 5px;
+        width: 100%;
+        height: 30px;
+        border: 1px #d8d8d8 solid;
+        padding: 0 10px;
+        box-sizing:border-box;
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+    }
+    input:hover{
+        border: 1px #1890ff solid;
+    }
+    input:focus{
+        border: 1px #1890ff solid;
+        box-shadow: 0 0 3px #1890ff;
+    }
+
     .chat-window{
         @width: 1000px;
         top: 10%;
@@ -17,6 +64,7 @@ html,body,#root{
         left: 50%;
         margin-left:-@width/2 ;
         width: @width;
+        max-height: 700px;
         min-height: 300px;
         position: absolute;
         border-radius: 10px;
@@ -27,21 +75,85 @@ html,body,#root{
         .chat-sider{
             height: 100%;
             width: 62px;
-            background: #aaa;
+            background-color: #aaa;
         }
         .chat-group{
             height: 100%;
             width: 238px;
-            background: #c5c7c5;
-            .mes-group{
+            background-color: #eee;
+            //border-right: solid 1px #aaa;
+            .chat-groupList{
                 height: 60px;
+                display: flex;
+                align-items: center;
+                overflow: hidden;
+                width: 238px;
+                .group-img{
+                    margin-right: 5px;
+                }
+                .group-name{
+                    font-size: 20px;
+                    overflow: hidden;
+                    text-overflow:ellipsis;
+                    white-space: nowrap;
+                    width: 180px;
+                }
+                .group-mes{
+                    color: #666;
+                    overflow: hidden;
+                    text-overflow:ellipsis;
+                    white-space: nowrap;
+                    width: 180px;
+                }
             }
-            .mes-group:hover{
-                background: #fff;
+            .chat-groupList:hover{
+                background-color: #e0e0e0;
             }
         }
-        .mes-body{
+        .chat-message{
             width: 700px;
+            background: #fff;
+            .message-body{
+                position: absolute;
+                top: 0;
+                bottom: 40px;
+                left: 300px;
+                right: 0;
+                overflow-y: auto;
+                padding: 6px;
+                .message-list{
+                    display: flex;
+                    margin: 35px 0;
+                    .message-img{
+                        margin-right: 12px;
+                    }
+                    .message-dev{
+                        .message-info{
+                            display: flex;
+                            color: #989696;
+                            .message-name{
+                                margin-right: 12px;
+                            }
+                        }
+                        .message-content{
+                            border: solid #aaa 1px;
+                            padding: 3px 8px;
+                            margin-top: 3px;
+                            border-radius: 8px;
+                        }
+                    }
+
+                }
+            }
+            .message-in{
+                position: absolute;
+                height: 38px;
+                bottom: 0;
+                left: 300px;
+                right: 0;
+                line-height: 38px;
+                padding: 0 6px;
+            }
         }
     }
 }

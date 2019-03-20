@@ -250,21 +250,20 @@ router.get("/groupList",async (ctx)=>{
     if(resultData){
         let len=resultData.groups.length;
         for(let i=0;i<len;i++){
-            let groupO= {};
+            let groupOwn= {};
             let groupname=resultData.groups[i];
-            groupO.group=groupname;
-            groupO.Badge=0;
-            groupO.type="crowd";
-            groupO.key=i;
+            groupOwn.name=groupname;
+            groupOwn.type="group";
+            groupOwn.key=i;
             let grouptAvatar= await groupDao.groupfind(groupname);
             if(grouptAvatar!=null){
-                groupO.avatar=grouptAvatar.avatar;
+                groupOwn.avatar=grouptAvatar.avatar;
             }
             let messagelast= await surveyDao.messagelast(groupname);
             if(messagelast!=null){
-                groupO.meslast=messagelast.name+":"+messagelast.myMes;
+                groupOwn.meslast=messagelast.name+":"+messagelast.myMes;
             }
-            groups[i]=groupO;
+            groups[i]=groupOwn;
         }
           res.groups=groups;
           res.status="success";

@@ -18,11 +18,15 @@ class App extends React.Component {
         super();
         this.state = {
             groupList:[],
+            mesGroup:"",
+            messageList:[],
+            inputValue:""
         };
     }
 
     componentDidMount() {
         this.getGroupList()
+        this.getMessage()
     };
     getGroupList=()=>{
         fetch("/groupList",{
@@ -34,18 +38,23 @@ class App extends React.Component {
         }).then(res=>{
             return res.json();
         }).then(data=>{
+            this.setState({
+                groupList:data.groups,
+            },()=>{
+                this.groupOn(data.groups)
+            })
 
-            this.groupOn(data.groups)
 
         }).catch(err=>console.log(err));
     };
-    groupOn=(data)=>{
-        let len=data.length;
+    groupOn=(groups)=>{
+        let len=groups.length;
         if(len>0){
             for (let i=0;i<len;i++){
-                socket.on(data[i].group, msg => {
-                    if(this.state.masgroup === data[i].group){
-                        let keys=this.state.mess.length;
+                socket.on(groups[i].group, msg => {
+                    if(this.state.mesGroup === groups[i].group){
+                        groups[i].meslast=msg.name+":"+msg.Mes;
+                        let keys=this.state.messageList.length;
                         let mydata={
                             _id: msg.name+keys,
                             name:msg.name,
@@ -53,117 +62,168 @@ class App extends React.Component {
                             mtype:"other",
                             avatar:msg.avatar
                         };
-                        data[i].meslast=msg.name+":"+msg.Mes;
                         this.setState({
-                            groupList:data,
-                            mess:this.state.mess.concat(mydata),
+                            groupList:groups,
+                            messageList:this.state.messageList.concat(mydata),
                         },()=> {
-                            let  nowheight=this.dom.scrollHeight-this.dom.offsetHeight;
-                            let  altitude= nowheight-this.dom.scrollTop;
-                            if(altitude<100){
-                                this.dom.scrollTop=nowheight;
-                            }
 
                         });
                     }else{
-                        data[i].Badge++;
-                        data[i].meslast=msg.name+":"+msg.Mes;
+                        groups[i].meslast=msg.name+":"+msg.Mes;
                         this.setState({
-                            groupList:data,
+                            groupList:groups,
                         });
                     }
                 });
             }
 
         }
-        let user=document.getElementById("username").innerHTML;
-        socket.on("pri"+user, msg => {
-            let privateMes=this.state.pridata;
-            let keys=privateMes.length;
-            let pridata={
-                _id: msg.name+keys,
-                name:msg.name,
-                myMes:msg.Mes,
-                mtype:"other",
-                avatar:msg.avatar
-            };
-            privateMes.push(pridata);
-            this.setState({
-                pridata:privateMes
-            });
-
-            let pricontain=this.pricontain(msg.name);
-            if(pricontain==="none"){
-                let pCgroupname=msg.name;
-                let pCgroupava=msg.avatar;
-                let groupLists=this.state.groupList;
-                let grouplilen=groupLists.length;
-                let pChatgroup={group: pCgroupname, Badge: 1, key: grouplilen, avatar: pCgroupava,type:"privatechat", meslast:msg.Mes};
-                groupLists.push(pChatgroup);
-                this.setState({
-                    groupList:groupLists,
-                })
-            }else {
-                if(this.state.masgroup===msg.name && this.state.chatway==="privatechat"){
-                    let mydata=[{
-                        _id: msg.name+keys,
-                        name:msg.name,
-                        myMes:msg.Mes,
-                        mtype:"other",
-                        avatar:msg.avatar
-                    }];
-                    //last消息显示在组
-                    let groupname=this.state.masgroup;
-                    let groupdata=this.state.groupList;
-                    let len=groupdata.length;
-                    for(let i=0;i<len;i++){
-                        if(groupdata[i].group===groupname && groupdata[i].type===this.state.chatway){
-                            groupdata[i].meslast=msg.Mes;
-                        }
-                    }
-                    //
-                    this.setState({
-                        mess:this.state.mess.concat(mydata),
-                    },()=> {
-                        let  nowheight=this.dom.scrollHeight-this.dom.offsetHeight;
-                        let  altitude= nowheight-this.dom.scrollTop;
-                        if(altitude<100){
-                            this.dom.scrollTop=nowheight;
-                        }
-
-                    });
-
-                }else{
-                    let groupnames=msg.name;
-                    let groupdatas=this.state.groupList;
-                    let len=groupdatas.length;
-                    for(let i=0;i<len;i++){
-                        if(groupdatas[i].group===groupnames && groupdatas[i].type==="privatechat"){
-                            groupdatas[i].meslast=msg.Mes;
-                            groupdatas[i].Badge++;
-                        }
-                    }
-                    this.setState({
-                        groupList:groupdatas
-                    })
+    };
+    groupClick=(item)=>{
+        const {groupList,mesGroup}=this.state;
+        if(mesGroup!==item.name){
+            groupList.map((group,index)=>{
+                if(item.name ===group.name ){
+                    groupList[index].status="select";
+                }else {
+                    groupList[index].status="null";
                 }
-            }
+            });
+            this.setState({
+                groupList,
+                mesGroup:item.group
+            })
+        }
+    };
+    getMessage=(name)=>{
+        let _data={
+            number:20,
+            group:"talk"
+        };
+        fetch("/myChat/messageList",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body:JSON.stringify(_data),
+            credentials: 'include',
+        }).then(res=>{
+            return res.json();
+        }).then(data=>{
+            if(data.status==="success"){
 
-        });
+                // let het =this.dom.scrollHeight;
+                this.setState({
+                    messageList: data.data||[]
+                },()=> {
+                    // if (mess.length<21){
+                    //     this.dom.scrollTop=this.dom.scrollHeight-this.dom.offsetHeight;
+                    // }else {
+                    //     this.dom.scrollTop=this.dom.scrollHeight-het-5;
+                    // }
+                })
+
+            }else if(data.status === "null"){
+                this.setState({
+                    messageList:[]
+                })
+            }
+            else if(data.status === "err"){
+            }
+        }).catch(err=>console.log(err));
     };
 
+    inputChange=(e)=>{
+        this.setState({
+            inputValue: e.target.value.trim()
+        })
+    };
 
     render() {
+        const {groupList,messageList,inputValue}=this.state;
         return (
             <div className="chat-index">
                 <div className="chat-window">
                     <div className="chat-sider"> </div>
                     <div className="chat-group">
-                        <div className="mes-group"> 111</div>
-                        <div className="mes-group"> 222</div>
-                        <div className="mes-group"> 333</div>
+                        {
+                            groupList.map((item,index) => {
+                                if(item){
+                                    if(item.type === "group"){
+                                        return(
+                                            <div key ={item.key} className="chat-groupList" onClick={()=>this.groupClick(item,index)} style={{backgroundColor:item.status ==="select"?"#cecece":""}}>
+                                                <div className="group-img">
+                                                    <img style={{width: 50,height: 50,borderRadius: 12}} src={item.avatar} />
+                                                </div>
+                                                <div>
+                                                    <div className="group-name">{item.name}</div>
+                                                    <div  className='group-mes'>{item.meslast}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }else {
+                                        return(
+                                            <div key ={item.key} className="chat-groupList">
+                                                <div className="group-img">
+                                                    <img style={{width: 50,height: 50,borderRadius: 12}} src={item.avatar} />
+                                                </div>
+                                                <div>
+                                                    <div className="group-name">{item.name}</div>
+                                                    <div  className='group-mes'>{item.meslast}</div>
+                                                </div>
+
+                                            </div>
+                                        )
+                                    }
+                                }
+                            })
+                        }
                     </div>
-                    <div className="mes-body"> </div>
+                    <div className="chat-message">
+                        <div className="message-body scrollbar">
+                            {messageList.map((item)=>{
+                                let createTime=new Date(item.createTime);
+                                if(item.type === "me"){
+                                    return (
+                                        <div key={item.id} className="message-list">
+                                            <div className="message-img">
+                                                <img style={{width: 38,height: 38,borderRadius: 12}} src={item.avatar} />
+                                            </div>
+
+                                            <div className="message-dev">
+                                                <div className="message-info">
+                                                    <div className="message-name">{item.name}</div>
+                                                    <div>{createTime.getHours()+':'+createTime.getMinutes()}</div>
+                                                </div>
+
+                                                <div className="message-content">{item.myMes}</div>
+                                            </div>
+                                        </div>
+                                    )
+                                }else {
+                                    return (
+                                        <div key={item.id} className="message-list">
+                                            <div className="message-img">
+                                                <img style={{width: 38,height: 38,borderRadius: 12}} src={item.avatar} />
+                                            </div>
+
+                                            <div className="message-dev">
+                                                <div className="message-info">
+                                                    <div className="message-name">{item.name}</div>
+                                                    <div>{createTime.getHours()+':'+createTime.getMinutes()}</div>
+                                                </div>
+
+                                                <div className="message-content">{item.myMes}</div>
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                            })}
+                        </div>
+                        <div className="message-in">
+                            <input value={inputValue} onChange={this.inputChange} placeholder="请输入..."/>
+                        </div>
+                    </div>
                 </div>
             </div>
         )

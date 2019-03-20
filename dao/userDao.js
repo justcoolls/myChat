@@ -123,6 +123,7 @@ module.exports ={
         });
     },
     groupList:async (formData)=>{
+
         let name = formData;
         let namePwd = {name: name};
         try {

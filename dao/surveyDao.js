@@ -48,7 +48,7 @@ module.exports ={
         });
     },
     messageFind:async function(formData){
-        let count=formData.mess;
+        let count=formData.number;
         let group=formData.group;
         try {
             return await  userDao.find({group:group}, null,
