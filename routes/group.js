@@ -17,37 +17,41 @@ function getCookie(cookies)
 
 }
 
-router.post('/createGroup',async (ctx, next) => {
+router.post('/createGroup',async (ctx) => {
     let cookies=ctx.header.cookie;
-    token=getCookie(cookies);
+    let token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
     let res= {};
     let formData = ctx.request.body;
     formData.user=user;
-    let grouplimit= await groupDao.grouplimit(user);
-    let groupnum=grouplimit.length;
-    if(groupnum<2){
-        let groupfind= await groupDao.groupfind(formData.name);
-        if(groupfind==null){
+    let groupLimit= await groupDao.groupLimit(user);
+    let groupNum=groupLimit.length;
+    if(groupNum<2){
+        let groupFind= await groupDao.groupFind(formData.name);
+        if(groupFind==null){
             let resultData= await groupDao.groupGreat(formData);
-            let useraddGroup = await userDao.addGroup(formData);
-            if(resultData ==="suc" && useraddGroup ==="suc"){
-                res.status="success";
+            let userAddGroup = await userDao.addGroup(formData);
+            if(resultData ==="suc" && userAddGroup ==="suc"){
+                res.status=1;
+                res.mes="success";
             }else {
-                res.status="err";
+                res.status=0;
+                res.mes="创建失败！";
             }
         }else {
-            res.status="exist";
+            res.status=2;
+            res.mes="名称已存在！";
         }
     }else{
-        res.status="limit";
+        res.status=3;
+        res.mes="最多创建两个分组！";
     }
 
     return ctx.body=JSON.stringify(res);
 });
 router.post('/addGroup',async (ctx, next) => {
     let cookies=ctx.header.cookie;
-    token=getCookie(cookies);
+    let token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
     let res= {};
     let formData = ctx.request.body;
@@ -72,7 +76,7 @@ router.post('/addGroup',async (ctx, next) => {
 
 router.post('/outGroup',async (ctx, next) => {
     let cookies=ctx.header.cookie;
-    token=getCookie(cookies);
+    let token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
     let res= {};
     let formData = ctx.request.body;
@@ -92,10 +96,10 @@ router.post('/outGroup',async (ctx, next) => {
     return ctx.body=JSON.stringify(res);
 
 });
-router.post('/groupmember',async (ctx, next) => {
+router.post('/groupMember',async (ctx, next) => {
     let res= {};
     let formData = ctx.request.body;
-    let resultData= await groupDao.groupfind(formData.name);
+    let resultData= await groupDao.groupFind(formData.name);
     if(resultData){
         let avatars= [];
         let users=resultData.users;
@@ -103,7 +107,7 @@ router.post('/groupmember',async (ctx, next) => {
         for(let i=0;i<len;i++){
             let infor= {};
             let userName =users[i];
-            let myavatars= await userDao.userinform(userName);
+            let myavatars= await userDao.userInform(userName);
             infor.user=myavatars[0].name;
             infor.avatar=myavatars[0].avatar;
             infor.key=i;

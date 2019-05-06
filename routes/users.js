@@ -94,27 +94,55 @@ router.post("/register",async (ctx)=>{
             res.status="err";
         }
     }
-
     return ctx.body=JSON.stringify(res);
 });
-router.post("/informavatar",async (ctx)=>{
-    let user = ctx.request.body.name;
-    let resultData= await userDao.informa(user);
+router.get("/information",async (ctx)=>{
+    let cookies=ctx.header.cookie;
+    let token=getCookie(cookies);
+    let user=jwt.verify(token, 'jwtSecret').name;
+    let resultData= await userDao.userInform(user);
     let res= {};
     if(resultData.length>0){
         res.status="success";
         res.avatar=resultData[0]._doc.avatar;
+        res.name=resultData[0]._doc.name;
+        res.age=resultData[0]._doc.age;
+        if(resultData[0]._doc.sex){
+            res.sex=resultData[0]._doc.sex;
+        }else {
+            res.sex="未知";
+        }
+        if(resultData[0]._doc.location){
+            res.location=resultData[0]._doc.location;
+        }else {
+            res.location="火星";
+        }
+        if(resultData[0]._doc.email){
+            res.email=resultData[0]._doc.email;
+        }else {
+            res.email="email";
+        }
+        if(resultData[0]._doc.gitHub){
+            res.gitHub=resultData[0]._doc.gitHub;
+        }else {
+            res.gitHub="gitHub";
+        }
+        if(resultData[0]._doc.personalWeb){
+            res.personalWeb=resultData[0]._doc.personalWeb;
+        }else {
+            res.personalWeb="personalWeb";
+        }
     }else{
         res.status="err";
     }
     return ctx.body=JSON.stringify(res);
 });
-router.get("/userinform",async (ctx)=>{
+router.get("/userInform",async (ctx)=>{
     let token;
     let cookies=ctx.header.cookie;
     token=getCookie(cookies);
     let user=jwt.verify(token, 'jwtSecret').name;
-    let resultData= await userDao.userinform(user);
+    let resultData= await userDao.userInform(user);
     let res= {};
     if(resultData.length>0){
         res.status="success";
@@ -157,7 +185,7 @@ router.get("/userinform",async (ctx)=>{
 });
 router.post("/userinforo",async (ctx)=>{
     let user = ctx.request.body.user;
-    let resultData= await userDao.userinform(user);
+    let resultData= await userDao.userInform(user);
     let res= {};
     if(resultData.length>0){
         let data=[];
@@ -251,15 +279,19 @@ router.get("/groupList",async (ctx)=>{
         let len=resultData.groups.length;
         for(let i=0;i<len;i++){
             let groupOwn= {};
-            let groupname=resultData.groups[i];
-            groupOwn.name=groupname;
+            let groupName=resultData.groups[i];
+            groupOwn.name=groupName;
             groupOwn.type="group";
             groupOwn.key=i;
-            let grouptAvatar= await groupDao.groupfind(groupname);
+            let grouptAvatar= await groupDao.groupFind(groupName);
+            if(grouptAvatar === null){
+                await userDao.outGroup({name:groupName,user:user});
+                break;
+            }
             if(grouptAvatar!=null){
                 groupOwn.avatar=grouptAvatar.avatar;
             }
-            let messagelast= await surveyDao.messagelast(groupname);
+            let messagelast= await surveyDao.messagelast(groupName);
             if(messagelast!=null){
                 groupOwn.meslast=messagelast.name+":"+messagelast.myMes;
             }

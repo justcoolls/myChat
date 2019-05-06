@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise;
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    groupname:{type:String,unique:true,dropDups: true},
+    groupName:{type:String,unique:true,dropDups: true},
     avatar:String,
     users:Array,
     owner:String,
@@ -24,13 +24,34 @@ const options = {
     // If not connected, return errors immediately rather than waiting for reconnect
     bufferMaxEntries: 0
 };
-const userDao=  mongoose.model('groups', userSchema);
+const groupDao=  mongoose.model('groups', userSchema);
 mongoose.connect(DB_URL,options);
 module.exports={
-    groupfind:async(data)=>{
+    groupGreatDefault:async(data)=>{
+        let avatar= Math.floor(Math.random()*12+1).toString();
+        let avataradd= "/public/img/avatar/default/"+avatar+".jpg";
+        let new_user = new groupDao({
+            groupName:'talk',
+            avatar:avataradd,
+            users: [],
+            owner:'admin',
+            _enabled:false
+        });
+        return new Promise(( resolve, reject ) => {
+            new_user.save(function(err,data){
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve("suc")
+                }
+            });
+        });
+    },
+    groupFind:async(data)=>{
         let name = data;
         return new Promise(( resolve, reject ) => {
-            userDao.findOne({groupname: name},function(err,data){
+            groupDao.findOne({groupName: name},function(err,data){
                 if (err) {
                     reject(err);
                 }
@@ -40,10 +61,10 @@ module.exports={
             });
         });
     },
-    grouplimit:async(data)=>{
+    groupLimit:async(data)=>{
         let name = data;
         return new Promise(( resolve, reject ) => {
-            userDao.find({owner: name},function(err,data){
+            groupDao.find({owner: name},function(err,data){
                 if (err) {
                     reject(err);
                 }
@@ -58,8 +79,8 @@ module.exports={
         let users = data.user;
         let avatar= Math.floor(Math.random()*12+1).toString();
         let avataradd= "/public/img/avatar/default/"+avatar+".jpg";
-        let new_user = new userDao({
-            groupname:name,
+        let new_user = new groupDao({
+            groupName:name,
             avatar:avataradd,
             users: users,
             owner:users,
@@ -81,7 +102,7 @@ module.exports={
         let name = data.name;
         let users = data.user;
         return new Promise(( resolve, reject ) => {
-            userDao.updateOne({groupname: name}, {$addToSet:{users:users}},function(err,data){
+            groupDao.updateOne({groupName: name}, {$addToSet:{users:users}},function(err,data){
                 if (err) {
                     reject(err);
                 }
@@ -95,7 +116,7 @@ module.exports={
         let name = data.name;
         let users = data.user;
         return new Promise(( resolve, reject ) => {
-            userDao.updateOne({groupname: name}, {$pull:{users:users}},function(err,data){
+            groupDao.updateOne({groupName: name}, {$pull:{users:users}},function(err,data){
                 if (err) {
                     reject(err);
                 }

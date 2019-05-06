@@ -18,28 +18,26 @@ module.exports={
             console.log("客户端断开连接.");
         });
         await socket.on('chats', async (ctx) =>{
-            let sendmes=new Object();
-            sendmes.Mes=ctx.mes;
-            sendmes.group=ctx.group;
-            sendmes.name=name;
-            await surveyDao.messageSave(sendmes);
-            let myavatars= await userDao.informa(name);
-            let myavatar=myavatars[0]._doc.avatar;
-            sendmes.avatar=myavatar;
+            let sendMessage={};
+            sendMessage.Mes=ctx.mes;
+            sendMessage.group=ctx.group;
+            sendMessage.name=name;
+            await surveyDao.messageSave(sendMessage);
+            let avatars= await userDao.userAvatar(name);
+            sendMessage.avatar=avatars[0]._doc.avatar;
             //给除了自己以外的客户端广播消息
-            socket.broadcast.emit(ctx.group,sendmes);
+            socket.broadcast.emit(ctx.group,sendMessage);
 
         });
         await socket.on('privatechat', async (ctx) =>{
-            let sendmes=new Object();
-            sendmes.Mes=ctx.mes;
-            sendmes.user=ctx.senduser;
-            sendmes.name=name;
-            let myavatars= await userDao.informa(name);
-            let myavatar=myavatars[0]._doc.avatar;
-            sendmes.avatar=myavatar;
+            let sendMessage={};
+            sendMessage.Mes=ctx.mes;
+            sendMessage.user=ctx.senduser;
+            sendMessage.name=name;
+            let avatars= await userDao.userAvatar(name);
+            sendMessage.avatar=avatars[0]._doc.avatar;
             //给除了自己以外的客户端广播消息
-            socket.broadcast.emit("pri"+ctx.acceptuser,sendmes);
+            socket.broadcast.emit("pri"+ctx.acceptuser,sendMessage);
         });
     }
 };

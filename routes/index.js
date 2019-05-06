@@ -40,7 +40,7 @@ router.post('/messageList', async (ctx, next) => {
         const cookies=ctx.header.cookie;
         const token=getCookie(cookies);
         const user=jwt.verify(token, 'jwtSecret').name;
-        const myAvatars= await userDao.informa(user);
+        const myAvatars= await userDao.userAvatar(user);
         const myAvatar=myAvatars[0].avatar;
         for(let i=0;i<reslen;i++){
             if(resultData[i].name===user){
@@ -56,7 +56,7 @@ router.post('/messageList', async (ctx, next) => {
             }else {
                 try {
                     let  name=resultData[i]._doc.name;
-                    let resultAvatar= await userDao.informa(name);
+                    let resultAvatar= await userDao.userAvatar(name);
                     let messageItem={};
                     messageItem.avatar=resultAvatar[0]._doc.avatar;
                     resultData[i]._doc.type="other";
