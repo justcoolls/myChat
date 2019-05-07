@@ -1,9 +1,13 @@
 import React from 'react';
 import 'babel-polyfill'
 import io from 'socket.io-client';
-import './style.less'
-import Modal from'./../component/modal'
-import GroupInfor from'./../groupInfor'
+import './style.less';
+import './../../../../public/icon/iconfont';
+import Modal from'./../component/modal';
+import GroupInfor from'./../groupInfor';
+import Emoji from '../emoji/index';
+import emojiTrans from '../emoji/emojiTrans';
+
 
 const socket = io(window.location.host, {
     query: 'token=' + getCookie(),
@@ -31,14 +35,13 @@ class App extends React.Component {
             myAvatar: "",
             chatWay:"crowd",
             groupAddModal:false,
-            GroupInforShow:false
+            GroupInforShow:false,
         };
     }
 
     componentDidMount() {
         this.getInformation();
-        this.getGroupList();
-        this.getMessageList()
+        this.getGroupList("initialize");
     };
 
     getInformation = () => {
@@ -50,17 +53,36 @@ class App extends React.Component {
                 })
             })
     };
-    getGroupList = () => {
+    getGroupList = (e) => {
         Service.groupList()
             .then((res) => {
                 const groups=res.groups;
-                groups[0].select=true;
-                this.setState({
-                    groupList: groups,
-                    mesGroup: groups[0].name,
-                }, () => {
-                    this.groupOn(res.groups)
-                })
+                const len =groups.length;
+                if(len<1){
+                    this.setState({
+                        groupList: [],
+                        mesGroup: '',
+                        messageList: []
+                    });
+                    return false
+                }
+                if(e ==="add"){
+                    groups[len-1].select=true;
+                    this.setState({
+                        groupList: groups,
+                    }, () => {
+                        this.groupOn(res.groups)
+                    })
+                } else{
+                    groups[0].select=true;
+                    this.setState({
+                        groupList: groups,
+                        mesGroup: groups[0].name,
+                    }, () => {
+                        this.groupOn(res.groups)
+                    })
+                }
+                this.getMessageList();
             });
     };
     groupOn = (groups) => {
@@ -205,9 +227,12 @@ class App extends React.Component {
         Service.createGroup(data).then((res)=>{
             if(res.status===1){
                 this.setState({
-                    groupAddModal:false
+                    groupAddModal:false,
+                    mesGroup: groupNameValue,
+                },()=>{
+                    this.getGroupList("add");
                 });
-                this.getGroupList();
+
             }
         });
     };
@@ -232,6 +257,20 @@ class App extends React.Component {
         })
     };
 
+    emojiChoose=(title)=>{
+        if(!title){
+            return false;
+        }
+        const value = this.state.inputValue;
+        const inputValue =value+"["+title+"]";
+        this.setState({
+            inputValue
+        });
+        document.getElementById("message-in").focus();
+    };
+    replace_emoji=(item)=>{
+        return emojiTrans.emojishow(item);
+    };
     render() {
         const {groupList, messageList, inputValue,myAvatar,mesGroup,groupAddModal,groupNameValue,GroupInforShow} = this.state;
         return (
@@ -241,7 +280,9 @@ class App extends React.Component {
                     <div className="chat-sider">
                         <img className="avatar" src={myAvatar}/>
                         <div  className="group-add" onClick={this.showGroupAddModal}>
-                            <img  src='/public/img/icon/add.svg'/>
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-add"/>
+                            </svg>
                         </div>
                         <Modal
                             title="新建分组"
@@ -303,6 +344,7 @@ class App extends React.Component {
                             visible={GroupInforShow}
                             onCancel={this.groupSettingHide}
                             mesGroup={mesGroup}
+                            outGroup={this.getGroupList}
                         />
                         <div ref={messageBody => this.messageBody = messageBody} className="message-body scrollbar">
                             {messageList.map((item) => {
@@ -314,8 +356,10 @@ class App extends React.Component {
                                                 <div className="message-info">
                                                     <div className="message-time">{createTime.getHours() + ':' + createTime.getMinutes()}</div>
                                                 </div>
-
-                                                <div className="message-content">{item.myMes}</div>
+                                                <div className="message-box">
+                                                    <div className="message-content" dangerouslySetInnerHTML={{  __html:this.replace_emoji(item.myMes) }}/>
+                                                    <div className="message-after"/>
+                                                </div>
                                             </div>
                                             <div className="message-img">
                                                 <img src={item.avatar}/>
@@ -334,8 +378,10 @@ class App extends React.Component {
                                                     <div className="message-name">{item.name}</div>
                                                     <div>{createTime.getHours() + ':' + createTime.getMinutes()}</div>
                                                 </div>
-
-                                                <div className="message-content">{item.myMes}</div>
+                                                <div className="message-box">
+                                                    <div className="message-before"/>
+                                                    <div className="message-content" dangerouslySetInnerHTML={{  __html:this.replace_emoji(item.myMes) }}/>
+                                                </div>
                                             </div>
                                         </div>
                                     )
@@ -343,8 +389,13 @@ class App extends React.Component {
                             })}
                         </div>
                         <div className="message-in">
-                            <input value={inputValue} onChange={this.inputChange} onKeyPress={this.inputKeyDown}
+                            <input id="message-in" value={inputValue} onChange={this.inputChange} onKeyPress={this.inputKeyDown}
                                    placeholder="请输入..."/>
+                            <div>
+                                <Emoji
+                                    onOk={this.emojiChoose}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

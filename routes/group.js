@@ -59,16 +59,20 @@ router.post('/addGroup',async (ctx, next) => {
     let resultData= await groupDao.addGroup(formData);
     if(resultData.nModified === 1 && resultData.n === 1){
         await userDao.addGroup(formData);
-        res.status="success";
+        res.status=1;
+        res.mes="success";
         res.avatar=resultData.avatar;
     }else if(resultData.nModified === 0 && resultData.n === 1){
         await userDao.addGroup(formData);
-        res.status="exist";
+        res.status=2;
+        res.mes="exist";
     }
     else if(resultData.nModified === 0 && resultData.n === 0){
-        res.status="noexist";
+        res.status=3;
+        res.mes="noexist";
     }else{
-        res.status="err";
+        res.status=0;
+        res.mes="err";
     }
     return ctx.body=JSON.stringify(res);
 
@@ -84,14 +88,18 @@ router.post('/outGroup',async (ctx, next) => {
     let resultData= await groupDao.outGroup(formData);
     let userpullGroup= await userDao.outGroup(formData);
     if(userpullGroup.nModified === 1 && userpullGroup.n === 1){
-        res.status="success";
+        res.status=1;
+        res.mes="success";
     }else if(userpullGroup.nModified === 0 && userpullGroup.n === 1){
-        res.status="exist";
+        res.status=0;
+        res.mes="exist";
     }
     else if(userpullGroup.nModified === 0 && userpullGroup.n === 0){
-        res.status="noexist";
+        res.status=1;
+        res.mes="noexist";
     }else{
-        res.status="err";
+        res.status=0;
+        res.mes="err";
     }
     return ctx.body=JSON.stringify(res);
 
@@ -101,6 +109,15 @@ router.post('/groupMember',async (ctx, next) => {
     let formData = ctx.request.body;
     let resultData= await groupDao.groupFind(formData.name);
     if(resultData){
+        let cookies=ctx.header.cookie;
+        let token=getCookie(cookies);
+        let user=jwt.verify(token, 'jwtSecret').name;
+        let owner=resultData.owner;
+        if(user === owner){
+            res.isOwner=1;
+        }else {
+            res.isOwner=0;
+        }
         let avatars= [];
         let users=resultData.users;
         let len=users.length;
@@ -113,10 +130,12 @@ router.post('/groupMember',async (ctx, next) => {
             infor.key=i;
             avatars.push(infor);
         }
-        res.status="success";
+        res.status=1;
+        res.mes="success";
         res.infors=avatars;
     }else{
-        res.status="err";
+        res.status=0;
+        res.mes="err";
     }
     return ctx.body=JSON.stringify(res);
 

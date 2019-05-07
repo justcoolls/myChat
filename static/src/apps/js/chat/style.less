@@ -74,18 +74,16 @@
             .group-add{
                 position: absolute;
                 width: 62px;
-                bottom: 8px;
-                img{
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 50px;
-                    margin: auto;
-                    display: block;
-                    background: #eeeeeee0;
-                }
+                bottom: 2px;
+                text-align: center;
+                font-size: 32px;
+                color: #eee;
             }
-            .group-add img:hover{
-                box-shadow: 0 0 10px #111;
+            .group-add :hover{
+                color: #40a9ff;
+            }
+            .group-add:focus {
+                color: #40a9ff;
             }
         }
         .chat-group{
@@ -200,26 +198,35 @@
                                 margin-right: 12px;
                             }
                         }
-                        .message-content{
-                            padding: 7px 10px;
-                            background: #eee;
-                            position: relative;
-                            -moz-border-radius: 10px;
-                            -webkit-border-radius: 10px;
-                            border-radius: 10px;
+                        .message-box {
+                            display: flex;
                             margin-left: 15px;
-                            display: inline-block;
-                        }
-                        .message-content:before {
-                            content: "";
-                            position: absolute;
-                            right: 100%;
-                            top: 9px;
-                            width: 0;
-                            height: 0;
-                            border-top: 9px solid transparent;
-                            border-right: 16px solid #eee;
-                            border-bottom: 9px solid transparent;
+                            justify-content: flex-start;
+                            .message-content{
+                                padding: 7px 10px;
+                                background: #eee;
+                                position: relative;
+                                -moz-border-radius: 10px;
+                                -webkit-border-radius: 10px;
+                                border-radius: 10px;
+                                display: flex;
+                                align-items: center;
+                                min-height: 35px;
+                                box-sizing: border-box;
+                                .emojiLi{
+                                    height: 32px;
+                                    width: 32px;
+                                }
+                            }
+                            .message-before{
+                                margin-top: 8px;
+                                width: 0;
+                                height: 0;
+                                border-top: 9px solid transparent;
+                                border-right: 16px solid #eee;
+                                border-bottom: 9px solid transparent;
+                            }
+
                         }
                     }
 
@@ -254,27 +261,36 @@
                                 margin-right: 20px;
                             }
                         }
-                        .message-content{
-                            padding: 7px 10px;
-                            background: #565656;
-                            position: relative;
-                            -moz-border-radius: 10px;
-                            -webkit-border-radius: 10px;
-                            border-radius: 10px;
+                        .message-box{
+                            display: flex;
                             margin-right: 15px;
-                            float: right;
-                            color: #fff;
-                        }
-                        .message-content:after {
-                            content: "";
-                            position: absolute;
-                            top: 9px;
-                            margin-left: 10px;
-                            width: 0;
-                            height: 0;
-                            border-top: 9px solid transparent;
-                            border-left: 16px solid #565656;
-                            border-bottom: 9px solid transparent;
+                            justify-content: flex-start;
+                            .message-content{
+                                padding: 7px 10px;
+                                background: #565656;
+                                position: relative;
+                                -moz-border-radius: 10px;
+                                -webkit-border-radius: 10px;
+                                border-radius: 10px;
+                                float: right;
+                                color: #fff;
+                                display: flex;
+                                align-items: center;
+                                min-height: 35px;
+                                box-sizing: border-box;
+                                .emojiLi{
+                                    height: 32px;
+                                    width: 32px;
+                                }
+                            }
+                            .message-after{
+                              margin-top: 8px;
+                              width: 0;
+                              height: 0;
+                              border-top: 9px solid transparent;
+                              border-left: 16px solid #565656;
+                              border-bottom: 9px solid transparent;
+                            }
                         }
                     }
 
@@ -286,8 +302,9 @@
                 bottom: 0;
                 left: 300px;
                 right: 0;
-                line-height: 38px;
                 padding: 0 6px;
+                display: flex;
+                align-items: center;
             }
         }
     }

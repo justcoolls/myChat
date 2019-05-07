@@ -1,0 +1,67 @@
+.emoji {
+  .emoji-list {
+    position: absolute;
+    background: #fff;
+    z-index: 99;
+    bottom: 45px;
+    right: 46px;
+    border-radius: 10px;
+    padding: 3px;
+    .emoji-row {
+      display: flex;
+      .emoji-img {
+        padding: 0 3px;
+        height: 32px;
+        width: 32px;
+      }
+      .emoji-img:hover {
+        background-color: #eee;
+      }
+    }
+  }
+  .message-icon {
+    margin: 0 10px 3px 10px;
+    height: 30px;
+    font-size: 28px;
+    color: #eee;
+  }
+  .message-icon :hover {
+    color: #40a9ff;
+  }
+  .message-icon:focus {
+    color: #40a9ff;
+  }
+}
+.enter {
+  animation:enterMove 0.5s ;
+  -webkit-animation:enterMove 0.5s ; /*Safari and Chrome*/
+  animation-fill-mode: forwards;
+}
+
+@keyframes enterMove
+{
+  from {transform:scale(0.5,0.5) translateY(100px) translateX(200px);opacity:0;}
+  to {transform:scale(1,1) translateY(0) translateX(0);opacity:1;}
+}
+
+@-webkit-keyframes enterMove /*Safari and Chrome*/
+{
+  from {transform:scale(0.5,0.5) translateY(100px) translateX(200px);opacity:0;}
+  to {transform:scale(1,1) translateY(0) translateX(0);opacity:1;}
+}
+.leave{
+  animation:leaveMove 0.5s ;
+  -webkit-animation:leaveMove 0.5s ; /*Safari and Chrome*/
+  animation-fill-mode: forwards;
+}
+@keyframes leaveMove
+{
+  from {transform:scale(1,1) translateY(0) translateX(0);opacity:1;}
+  to {transform:scale(0.5,0.5) translateY(100px) translateX(200px);opacity:0;}
+}
+
+@-webkit-keyframes leaveMove /*Safari and Chrome*/
+ {
+  from {transform:scale(1,1) translateY(0) translateX(0);opacity:1;}
+  to {transform:scale(0.5,0.5) translateY(100px) translateX(200px);opacity:0;}
+ }

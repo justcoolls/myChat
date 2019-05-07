@@ -7,7 +7,8 @@ class Modal extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            memberList:[]
+            memberList:[],
+            isOwner:0
         }
     }
 
@@ -29,12 +30,16 @@ class Modal extends React.Component {
                     };
                     Service.groupMember(data).then((res)=>{
                         this.setState({
-                            memberList:res.infors ||[]
+                            memberList:res.infors ||[],
+                            isOwner:res.isOwner
                         })
                     })
                 }
                 this.setState({
                     visible: true,
+                },()=>{
+                    this.stopBubble();
+                    document.addEventListener('click',this.hide,false);
                 });
             }else {
                 this.setState({
@@ -42,15 +47,38 @@ class Modal extends React.Component {
                 });
             }
         }
-
     }
-
+    stopBubble=(event)=>{
+        if(event && event.stopPropagation){
+            event.preventDefault();
+            event.stopPropagation();
+            event.nativeEvent.stopImmediatePropagation();
+        }else{
+            window.event.cancelBubble=true; //IE
+        }
+    };
+    hide=()=>{
+        this.props.onCancel();
+        document.removeEventListener('click',this.hide,false)
+    };
+    groupInfor=(event)=>{
+        this.stopBubble(event);
+    };
+    outGroup=()=>{
+        const data={
+            name:this.state.mesGroup
+        };
+        Service.outGroup(data).then((res)=>{
+            console.log(res);
+            this.props.outGroup();
+        })
+    };
 
     render() {
-        const {visible,memberList,mesGroup} = this.state;
+        const {visible,memberList,mesGroup,isOwner} = this.state;
         return (
             <div className="groupInfor">
-                <div className="groupInfor-content scrollbar" style={{right: visible ? 10 : -270}}>
+                <div onClick={this.groupInfor} className="groupInfor-content scrollbar" style={{right: visible ? 10 : -270}}>
                     <div className="groupInfor-title">群通知</div>
                     <div className="groupInfor-inform">欢迎加入{mesGroup}!</div>
                     <div className="groupInfor-title">群成员</div>
@@ -65,12 +93,13 @@ class Modal extends React.Component {
                         })}
                     </div>
                     <div className="groupInfor-bottom">
-                        <button  type="button" className="btn btn-danger">
-                            <span>退出群聊</span>
-                        </button>
+                        {isOwner?"":
+                            <button onClick={this.outGroup}  type="button" className="btn btn-danger">
+                                <span>退出群聊</span>
+                            </button>
+                        }
                     </div>
                 </div>
-                {visible ? <div onClick={this.props.onCancel} className="background-mark"/> : ""}
             </div>
         );
     }
