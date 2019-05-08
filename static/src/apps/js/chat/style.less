@@ -85,6 +85,37 @@
             .group-add:focus {
                 color: #40a9ff;
             }
+            .group-operation{
+                position:absolute;
+                bottom: 20px;
+                left: 52px;
+                overflow: hidden;
+                transition: width 0.5s;
+                //-moz-transition: width 0.2s; /* Firefox 4 */
+                //-webkit-transition: width 0.2s; /* Safari 和 Chrome */
+                //-o-transition: width 0.2s; /* Opera */
+                .group-body{
+                    display: flex;
+                    align-items: flex-end;
+                    //width:100px;
+                }
+                .operation-before{
+                    margin-bottom: 8px;
+                    width: 0;
+                    height: 0;
+                    border-top: 9px solid transparent;
+                    border-right: 16px solid #eee;
+                    border-bottom: 9px solid transparent;
+                }
+                .operation-content{
+                    background: #fff;
+                    padding: 5px;
+                    text-align: center;
+                    border-radius: 8px;
+                    width: 100px;
+                    box-sizing: border-box;
+                }
+            }
         }
         .chat-group{
             height: 100%;
@@ -193,14 +224,19 @@
                         word-wrap: break-word;
                         .message-info{
                             display: flex;
-                            color: #5f5c5c;
+                            align-items: flex-end;
+                            font-family: local-file,Arial,Verdana,"serif";
+                            color: #eee;
                             .message-name{
-                                margin-right: 12px;
+                                margin-left: 12px;
+                                margin-right: 8px;
+                            }
+                            .message-time{
+                                font-size: 0.9em;
                             }
                         }
                         .message-box {
                             display: flex;
-                            margin-left: 15px;
                             justify-content: flex-start;
                             .message-content{
                                 padding: 7px 10px;
@@ -255,15 +291,16 @@
                         word-wrap: break-word;
                         .message-info{
                             display: flex;
-                            color: #5f5c5c;
+                            color: #eee;
                             justify-content: flex-end;
+                            font-family: local-file,Arial,Verdana,"serif";
                             .message-time{
                                 margin-right: 20px;
+                                font-size: 0.9em;
                             }
                         }
                         .message-box{
                             display: flex;
-                            margin-right: 15px;
                             justify-content: flex-start;
                             .message-content{
                                 padding: 7px 10px;

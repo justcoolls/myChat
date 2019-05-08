@@ -34,8 +34,10 @@ class App extends React.Component {
             groupNameValue: "",
             myAvatar: "",
             chatWay:"crowd",
+            groupCreateModal:false,
             groupAddModal:false,
-            GroupInforShow:false,
+            groupInforShow:false,
+            groupHandle:false,
         };
     }
 
@@ -66,8 +68,9 @@ class App extends React.Component {
                     });
                     return false
                 }
-                if(e ==="add"){
+                if(e ==="join"){
                     groups[len-1].select=true;
+
                     this.setState({
                         groupList: groups,
                     }, () => {
@@ -208,9 +211,88 @@ class App extends React.Component {
             socket.emit('privateChat', {mes: myMes, acceptuser: this.state.mesGroup});
         }
     };
+    //groupHandle
+    groupHandle=(event)=>{
+        const {groupHandle}=this.state;
+        if(groupHandle){
+            this.setState({
+                groupHandle:false
+            })
+        }else {
+            this.setState({
+                groupHandle:true
+            })
+        }
+        this.stopBubble(event);
+        document.addEventListener('click',this.groupHandleHide,false);
+    };
+    groupHandleHide=()=>{
+        this.setState({
+            groupHandle:false
+        });
+        document.removeEventListener('click',this.hide,false)
+    };
+    groupOperation=(event)=>{
+        this.stopBubble(event);
+    };
+    stopBubble=(event)=>{
+        if(event && event.stopPropagation){
+            event.preventDefault();
+            event.stopPropagation();
+            event.nativeEvent.stopImmediatePropagation();
+        }else{
+            window.event.cancelBubble=true; //IE
+        }
+    };
+    //groupCreate
+    showGroupCreateModal=()=>{
+        this.setState({
+            groupCreateModal:true,
+            groupHandle:false
+        })
+    };
+    hideGroupCreateModal=()=>{
+        this.setState({
+            groupNameValue: "",
+            groupCreateModal:false
+        })
+    };
+    groupCreate=()=>{
+        const {groupNameValue}=this.state;
+        if(!groupNameValue){
+            alert("请输入name");
+            return false;
+        }
+        const data={
+            name:groupNameValue
+        };
+        Service.createGroup(data).then((res)=>{
+            if(res.status===1){
+                this.setState({
+                    groupCreateModal:false,
+                    mesGroup: groupNameValue,
+                },()=>{
+                    this.getGroupList("join");
+                });
+
+            }
+        });
+    };
+    groupNameCreateKeyDown=(event)=>{
+        if (event.keyCode || event.which === 13) {
+            this.groupCreate();
+        }
+    };
+    groupNameChange=(e)=>{
+       this.setState({
+           groupNameValue:e.target.value.trim()
+       })
+    };
+    //groupAdd
     showGroupAddModal=()=>{
         this.setState({
-            groupAddModal:true
+            groupAddModal:true,
+            groupHandle:false
         })
     };
     hideGroupAddModal=()=>{
@@ -221,39 +303,41 @@ class App extends React.Component {
     };
     groupAdd=()=>{
         const {groupNameValue}=this.state;
+        if(!groupNameValue){
+            alert("请输入name");
+            return false;
+        }
         const data={
             name:groupNameValue
         };
-        Service.createGroup(data).then((res)=>{
+
+        console.log("addGroup"+data);
+        Service.addGroup(data).then((res)=>{
             if(res.status===1){
                 this.setState({
                     groupAddModal:false,
                     mesGroup: groupNameValue,
                 },()=>{
-                    this.getGroupList("add");
+                    this.getGroupList("join");
                 });
 
             }
         });
     };
-    groupNameKeyDown=(event)=>{
+    groupNameAddKeyDown=(event)=>{
         if (event.keyCode || event.which === 13) {
             this.groupAdd();
         }
     };
-    groupNameChange=(e)=>{
-       this.setState({
-           groupNameValue:e.target.value.trim()
-       })
-    };
+    //group-information
     groupSettingShow=()=>{
         this.setState({
-            GroupInforShow:true
+            groupInforShow:true
         })
     };
     groupSettingHide=()=>{
         this.setState({
-            GroupInforShow:false
+            groupInforShow:false
         })
     };
 
@@ -272,31 +356,64 @@ class App extends React.Component {
         return emojiTrans.emojishow(item);
     };
     render() {
-        const {groupList, messageList, inputValue,myAvatar,mesGroup,groupAddModal,groupNameValue,GroupInforShow} = this.state;
+        const {groupList, messageList, inputValue,myAvatar,mesGroup,groupCreateModal,groupAddModal,groupNameValue,groupInforShow,groupHandle} = this.state;
         return (
             <div className="chat-index">
                 <div className="backBlur"/>
                 <div className="chat-window">
                     <div className="chat-sider">
                         <img className="avatar" src={myAvatar}/>
-                        <div  className="group-add" onClick={this.showGroupAddModal}>
+                        <div  className="group-add" onClick={this.groupHandle}>
                             <svg className="icon" aria-hidden="true">
                                 <use xlinkHref="#icon-add"/>
                             </svg>
                         </div>
-                        <Modal
-                            title="新建分组"
-                            visible={groupAddModal}
-                            onOk={this.groupAdd}
-                            onCancel={this.hideGroupAddModal}
-                        >
-                            <div>
-                                <input value={groupNameValue}
-                                       onKeyPress={this.groupNameKeyDown}
-                                       onChange={this.groupNameChange}
-                                       placeholder="请输入分组名称..."/>
+                        <div className="group-operation" onClick={this.groupOperation} style={{width:groupHandle?115:0}}>
+                            <div className="group-body">
+                                <div className="operation-before"/>
+                                <div className="operation-content">
+                                    <div style={{marginBottom:5}}>
+                                        <button onClick={this.showGroupCreateModal} type="button" className="btn btn-primary">
+                                            <span>创建群组</span>
+                                        </button>
+                                    </div>
+                                    <biv>
+                                        <button onClick={this.showGroupAddModal} type="button" className="btn btn-primary">
+                                            <span>加入群组</span>
+                                        </button>
+                                    </biv>
+                                </div>
                             </div>
-                        </Modal>
+                        </div>
+                        <div onClick={this.groupOperation}>
+                            <Modal
+                                title="新建分组"
+                                visible={groupCreateModal}
+                                onOk={this.groupCreate}
+                                onCancel={this.hideGroupCreateModal}
+                            >
+                                <div>
+                                    <input value={groupNameValue}
+                                           onKeyPress={this.groupNameCreateKeyDown}
+                                           onChange={this.groupNameChange}
+                                           placeholder="请输入分组名称..."/>
+                                </div>
+                            </Modal>
+                            <Modal
+                                title="加入分组"
+                                visible={groupAddModal}
+                                onOk={this.groupAdd}
+                                onCancel={this.hideGroupAddModal}
+                            >
+                                <div>
+                                    <input value={groupNameValue}
+                                           onKeyPress={this.groupNameAddKeyDown}
+                                           onChange={this.groupNameChange}
+                                           placeholder="请输入分组名称..."/>
+                                </div>
+                            </Modal>
+                        </div>
+
                     </div>
                     <div className="chat-group">
                         {
@@ -341,7 +458,7 @@ class App extends React.Component {
                             </div>
                         </div>
                         <GroupInfor
-                            visible={GroupInforShow}
+                            visible={groupInforShow}
                             onCancel={this.groupSettingHide}
                             mesGroup={mesGroup}
                             outGroup={this.getGroupList}
@@ -376,7 +493,7 @@ class App extends React.Component {
                                             <div className="message-dev">
                                                 <div className="message-info">
                                                     <div className="message-name">{item.name}</div>
-                                                    <div>{createTime.getHours() + ':' + createTime.getMinutes()}</div>
+                                                    <div className="message-time">{createTime.getHours() + ':' + createTime.getMinutes()}</div>
                                                 </div>
                                                 <div className="message-box">
                                                     <div className="message-before"/>

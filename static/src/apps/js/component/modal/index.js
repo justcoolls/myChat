@@ -49,9 +49,9 @@ class Modal extends React.Component {
                     <div className={`modal ${modalBack}`} onClick={onCancel}>
                         <div className="modal-wrap">
                             <div className={`modal-content ${active}`} onClick={this.stop}>
-                                <div className="modal-header">
+                                {title === undefined?"":<div className="modal-header">
                                     <div className="modal-title">{title}</div>
-                                </div>
+                                </div>}
                                 <div className="modal-body">
                                     {this.props.children}
                                 </div>

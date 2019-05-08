@@ -53,6 +53,20 @@ const Service = {
             return data;
         }).catch(err => console.log(err));
     },
+    addGroup: (data) => {
+        return fetch("/group/addGroup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data),
+            credentials: 'include',
+        }).then(res => {
+            return res.json();
+        }).then(data => {
+            return data;
+        }).catch(err => console.log(err));
+    },
 
 };
 export default Service;
