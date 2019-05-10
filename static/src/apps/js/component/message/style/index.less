@@ -1,0 +1,79 @@
+#myCat-message {
+  position: fixed;
+  top: 16px;
+  left: 0;
+  z-index: 1010;
+  width: 100%;
+  .message-li {
+    padding: 8px;
+    text-align: center;
+    .message-node {
+      display: inline-block;
+      .message-node-content {
+        padding: 6px 12px;
+        background: #fff;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        pointer-events: all;
+        display: flex;
+        align-items: center;
+        .message-icon {
+          display: inline-block;
+          margin-right: 8px;
+          font-size: 18px;
+        }
+        .icon-info {
+          color: #1890ff;
+        }
+        .icon-success {
+          color: #52c41a;
+        }
+        .icon-error {
+          color: #f5222d;
+        }
+        .icon-warning {
+          color: #faad16;
+        }
+
+      }
+    }
+  }
+  .move-up-leave {
+    animation-name: MessageMoveOut;
+    overflow: hidden;
+    animation-duration: .3s;
+  }
+  .move-up-enter {
+    animation-name: antMoveUpIn;
+    animation-duration: 0.3s;
+    overflow: hidden;
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes antMoveUpIn {
+  0% {
+    transform-origin: 0 0;
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform-origin: 0 0;
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes MessageMoveOut {
+  0% {
+    opacity: 1;
+    max-height: 150px;
+    padding: 8px;
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+  }
+}

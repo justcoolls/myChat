@@ -33,7 +33,7 @@ router.post('/createGroup',async (ctx) => {
             let userAddGroup = await userDao.addGroup(formData);
             if(resultData ==="suc" && userAddGroup ==="suc"){
                 res.status=1;
-                res.mes="success";
+                res.mes="创建成功！";
             }else {
                 res.status=0;
                 res.mes="创建失败！";
@@ -60,19 +60,19 @@ router.post('/addGroup',async (ctx, next) => {
     if(resultData.nModified === 1 && resultData.n === 1){
         await userDao.addGroup(formData);
         res.status=1;
-        res.mes="success";
+        res.mes="加入成功！";
         res.avatar=resultData.avatar;
     }else if(resultData.nModified === 0 && resultData.n === 1){
         await userDao.addGroup(formData);
         res.status=2;
-        res.mes="exist";
+        res.mes="已加入分组！";
     }
     else if(resultData.nModified === 0 && resultData.n === 0){
         res.status=3;
-        res.mes="noexist";
+        res.mes="分组不存在！";
     }else{
         res.status=0;
-        res.mes="err";
+        res.mes="加入失败！";
     }
     return ctx.body=JSON.stringify(res);
 

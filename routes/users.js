@@ -298,9 +298,11 @@ router.get("/groupList",async (ctx)=>{
             groups[i]=groupOwn;
         }
           res.groups=groups;
-          res.status="success";
+          res.status=1;
+          res.mes="success";
     }else{
-          res.status="err";
+          res.status=0;
+          res.mes="err";
     }
     return ctx.body=JSON.stringify(res);
 });

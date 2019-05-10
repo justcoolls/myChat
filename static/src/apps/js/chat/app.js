@@ -4,10 +4,11 @@ import io from 'socket.io-client';
 import './style.less';
 import './../../../../public/icon/iconfont';
 import Modal from'./../component/modal';
+import {message} from '../component/message/index';
+// import {message} from 'rc-alert';
 import GroupInfor from'./../groupInfor';
 import Emoji from '../emoji/index';
 import emojiTrans from '../emoji/emojiTrans';
-
 
 const socket = io(window.location.host, {
     query: 'token=' + getCookie(),
@@ -58,6 +59,10 @@ class App extends React.Component {
     getGroupList = (e) => {
         Service.groupList()
             .then((res) => {
+                if(res.status !== 1){
+                    message.error("拉取分组列表失败");
+                    return false;
+                }
                 const groups=res.groups;
                 const len =groups.length;
                 if(len<1){
@@ -147,7 +152,11 @@ class App extends React.Component {
             group: this.state.mesGroup
         };
         Service.getMessageList(data).then((res) => {
-            if (res.status === "success") {
+            if(res.status === 0){
+                message.error(res.mes);
+                return false;
+            }
+            if (res.status === 1) {
                 this.setState({
                     messageList: res.data || []
                 }, () => {
@@ -213,18 +222,19 @@ class App extends React.Component {
     };
     //groupHandle
     groupHandle=(event)=>{
-        const {groupHandle}=this.state;
-        if(groupHandle){
-            this.setState({
-                groupHandle:false
-            })
-        }else {
-            this.setState({
-                groupHandle:true
-            })
-        }
-        this.stopBubble(event);
-        document.addEventListener('click',this.groupHandleHide,false);
+        message.success("qwe")
+        // const {groupHandle}=this.state;
+        // if(groupHandle){
+        //     this.setState({
+        //         groupHandle:false
+        //     })
+        // }else {
+        //     this.setState({
+        //         groupHandle:true
+        //     })
+        // }
+        // this.stopBubble(event);
+        // document.addEventListener('click',this.groupHandleHide,false);
     };
     groupHandleHide=()=>{
         this.setState({
@@ -274,7 +284,8 @@ class App extends React.Component {
                 },()=>{
                     this.getGroupList("join");
                 });
-
+            }else {
+                message.error(res.mes)
             }
         });
     };
@@ -320,7 +331,8 @@ class App extends React.Component {
                 },()=>{
                     this.getGroupList("join");
                 });
-
+            }else {
+                message.error(res.mes)
             }
         });
     };

@@ -72,11 +72,14 @@ router.post('/messageList', async (ctx, next) => {
             }
         }
         res.data=result;
-        res.status="success";
+        res.status=1;
+        res.mes="success";
     }else if(reslen===0){
-        res.status="null";
+        res.status=2;
+        res.mes="无消息列表失败！";
     }else{
-        res.status="err";
+        res.status=0;
+        res.mes="获取消息列表失败！";
     }
     return ctx.body=JSON.stringify(res);
 });

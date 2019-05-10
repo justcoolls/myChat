@@ -71,6 +71,7 @@ class Modal extends React.Component {
         Service.outGroup(data).then((res)=>{
             console.log(res);
             this.props.outGroup();
+            this.props.onCancel();
         })
     };
 
@@ -93,11 +94,14 @@ class Modal extends React.Component {
                         })}
                     </div>
                     <div className="groupInfor-bottom">
-                        {isOwner?"":
-                            <button onClick={this.outGroup}  type="button" className="btn btn-danger">
-                                <span>退出群聊</span>
-                            </button>
-                        }
+                        {/*{isOwner?"":*/}
+                            {/*<button onClick={this.outGroup}  type="button" className="btn btn-danger">*/}
+                                {/*<span>退出群聊</span>*/}
+                            {/*</button>*/}
+                        {/*}*/}
+                        <button onClick={this.outGroup}  type="button" className="btn btn-danger">
+                            <span>退出群聊</span>
+                        </button>
                     </div>
                 </div>
             </div>
