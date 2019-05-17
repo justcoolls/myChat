@@ -30,11 +30,12 @@ module.exports={
     groupGreatDefault:async(data)=>{
         let avatar= Math.floor(Math.random()*12+1).toString();
         let avataradd= "/public/img/avatar/default/"+avatar+".jpg";
+        let users = data.user;
         let new_user = new groupDao({
             groupName:'talk',
             avatar:avataradd,
-            users: [],
-            owner:'admin',
+            users: users,
+            owner:'administration',
             _enabled:false
         });
         return new Promise(( resolve, reject ) => {
@@ -117,6 +118,19 @@ module.exports={
         let users = data.user;
         return new Promise(( resolve, reject ) => {
             groupDao.updateOne({groupName: name}, {$pull:{users:users}},function(err,data){
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        });
+    },
+    delGroup:async(data)=>{
+        let name = data;
+        return new Promise(( resolve, reject ) => {
+            groupDao.deleteMany({groupName: name},function(err,data){
                 if (err) {
                     reject(err);
                 }

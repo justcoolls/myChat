@@ -86,6 +86,12 @@ router.post('/outGroup',async (ctx, next) => {
     let formData = ctx.request.body;
     formData.user=user;
     let resultData= await groupDao.outGroup(formData);
+    if(resultData.nModified === 1 && resultData.n === 1){
+        let groupFind= await groupDao.groupFind(formData.name);
+        if(groupFind.users.length===0){
+            await groupDao.delGroup(formData.name);
+        }
+    }
     let userpullGroup= await userDao.outGroup(formData);
     if(userpullGroup.nModified === 1 && userpullGroup.n === 1){
         res.status=1;

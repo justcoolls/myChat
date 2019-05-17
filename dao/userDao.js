@@ -76,7 +76,7 @@ module.exports = {
                     reject(err);
                 }
                 else {
-                    resolve('suc')
+                    resolve('success')
                 }
             });
         });

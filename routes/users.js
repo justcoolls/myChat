@@ -58,10 +58,12 @@ router.post("/login",async (ctx)=>{
     };
     if(resultData!=null){
         let token = jwt.sign(profile, 'jwtSecret', {expiresIn: '10d'});
-        res.status="success";
+        res.status=1;
+        res.mes="登录成功！";
         res.token=token;
     }else {
-        res.status="err";
+        res.status=0;
+        res.mes="用户名或密码错误！";
     }
         return ctx.body=JSON.stringify(res);
 });
@@ -70,28 +72,36 @@ router.post("/register",async (ctx)=>{
     let res= {};
     let userlen=formData.userName.length;
     if(userlen<3){
-        res.status="lengtherr";
+        res.status=0;
+        res.mes='名称不能小于三个字符！';
+    }else if(formData.userName==='administration'){
+        res.status=0;
+        res.mes='用户名称已存在！';
     }else {
-        // let verifyUser= await userDao.verifyUser(formData);
-        let verifyUser= null
-
+        let verifyUser= await userDao.verifyUser(formData);
         if(verifyUser==null){
             let resultData= await userDao.register(formData);
             let profile = {
                 name: formData.userName,
             };
-            if(resultData === 'suc'){
+            if(resultData === 'success'){
                 let Groupdata= {};
                 Groupdata.user=formData.userName;
                 Groupdata.name="talk";
-                await groupDao.addGroup(Groupdata);
-                res.token=jwt.sign(profile, 'jwtSecret', {expiresIn: '10d'});;
-                res.status="success";
+                const addGroupResult=await groupDao.addGroup(Groupdata);
+                if(addGroupResult.nModified === 0 && addGroupResult.n === 0){
+                    await groupDao.groupGreatDefault(Groupdata);
+                }
+                res.token=jwt.sign(profile, 'jwtSecret', {expiresIn: '10d'});
+                res.status=1;
+                res.mes="注册成功！";
             }else {
-                res.status="err";
+                res.status=0;
+                res.mes="注册失败！";
             }
         }else {
-            res.status="err";
+            res.status=0;
+            res.mes='用户名称已存在!';
         }
     }
     return ctx.body=JSON.stringify(res);

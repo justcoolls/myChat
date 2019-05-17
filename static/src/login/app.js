@@ -1,5 +1,5 @@
 import React from 'react';
-// import 'babel-polyfill'
+import rcAlert from 'rc-alert';
 import './style.less'
 class App extends React.Component {
     constructor(props) {
@@ -146,12 +146,11 @@ class App extends React.Component {
         }).then(res => {
             return res.json();
         }).then(data => {
-            if (data.status === "success") {
-
+            if (data.status === 1) {
                 document.cookie = "token=" + data.token;
                 window.location.href = "/";
-            } else if (data.status === "err") {
-                console.error('用户名或密码错误');
+            } else{
+                rcAlert.error(data.mes);
             }
         }).catch(err => console.log(err));
 
@@ -180,14 +179,13 @@ class App extends React.Component {
         }).then(res => {
             return res.json();
         }).then(data => {
-            if (data.status === "success") {
+            if (data.status === 1) {
                 document.cookie = "token=" + data.token;
                 window.location.href = "/";
-            } else if (data.status === "lengtherr") {
-                console.info('用户名不能少于三位数');
-            } else if (data.status === "err") {
-                console.info('注册失败，用户名已存在');
+            } else  {
+                rcAlert.error(data.mes);
             }
+
         }).catch(err => console.log(err));
     };
     userChange = (e) => {

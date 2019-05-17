@@ -4,8 +4,7 @@ import io from 'socket.io-client';
 import './style.less';
 import './../../../../public/icon/iconfont';
 import Modal from'./../component/modal';
-import {message} from '../component/message/index';
-// import {message} from 'rc-alert';
+import rcAlert from 'rc-alert';
 import GroupInfor from'./../groupInfor';
 import Emoji from '../emoji/index';
 import emojiTrans from '../emoji/emojiTrans';
@@ -39,12 +38,13 @@ class App extends React.Component {
             groupAddModal:false,
             groupInforShow:false,
             groupHandle:false,
+            memberChatModal:false,
+            memberChatItem:{}
         };
     }
 
     componentDidMount() {
         this.getInformation();
-        this.getGroupList("initialize");
     };
 
     getInformation = () => {
@@ -53,14 +53,17 @@ class App extends React.Component {
                 this.setState({
                     name: res.name,
                     myAvatar: res.avatar
+                },()=>{
+                    this.getGroupList("initialize");
                 })
             })
     };
     getGroupList = (e) => {
+        const groupList=this.state.groupList;
         Service.groupList()
             .then((res) => {
                 if(res.status !== 1){
-                    message.error("拉取分组列表失败");
+                    rcAlert.error("拉取分组列表失败");
                     return false;
                 }
                 const groups=res.groups;
@@ -74,12 +77,16 @@ class App extends React.Component {
                     return false
                 }
                 if(e ==="join"){
+                    const groupListlen=groupList.length;
+                    for(let i=0;i<groupListlen;i++){
+                        groupList[i].select=false;
+                    }
                     groups[len-1].select=true;
-
+                    const newGroups=groupList.concat(groups[len-1]);
                     this.setState({
-                        groupList: groups,
+                        groupList: newGroups,
                     }, () => {
-                        this.groupOn(res.groups)
+                        this.groupOn(newGroups)
                     })
                 } else{
                     groups[0].select=true;
@@ -87,7 +94,7 @@ class App extends React.Component {
                         groupList: groups,
                         mesGroup: groups[0].name,
                     }, () => {
-                        this.groupOn(res.groups)
+                        this.groupOn(groups)
                     })
                 }
                 this.getMessageList();
@@ -95,45 +102,98 @@ class App extends React.Component {
     };
     groupOn = (groups) => {
         let len = groups.length;
+        const user=this.state.name;
         if (len > 0) {
             for (let i = 0; i < len; i++) {
-                socket.on(groups[i].name, msg => {
-                    if (this.state.mesGroup === groups[i].name) {
-                        groups[i].meslast = msg.name + ":" + msg.Mes;
-                        let keys = this.state.messageList.length;
-                        let messageData = {
-                            _id: msg.name + keys,
-                            name: msg.name,
-                            myMes: msg.Mes,
-                            type: "other",
-                            avatar: msg.avatar
-                        };
-                        this.setState({
-                            groupList: groups,
-                            messageList: this.state.messageList.concat(messageData),
-                        },() => {
-                            this.messageBody.scrollTo({
-                                top: this.messageBody.scrollHeight - this.messageBody.offsetHeight,
-                                behavior: "smooth"
+                if(groups[i].type=== "group"){
+                    socket.on(groups[i].name, msg => {
+                        if (this.state.mesGroup === groups[i].name) {
+                            groups[i].meslast = msg.name + ":" + msg.Mes;
+                            groups[i].badge = 0;
+                            let keys = this.state.messageList.length;
+                            let messageData = {
+                                id: msg.name + keys,
+                                name: msg.name,
+                                myMes: msg.Mes,
+                                type: "other",
+                                avatar: msg.avatar,
+                                createTime: msg.createTime,
+                            };
+                            this.setState({
+                                groupList: groups,
+                                messageList: this.state.messageList.concat(messageData),
+                            },() => {
+                                const  height=this.messageBody.scrollHeight-this.messageBody.offsetHeight;
+                                const  altitude= height-this.messageBody.scrollTop;
+                                if(altitude<300){
+                                    this.messageBody.scrollTo({
+                                        top: height,
+                                        behavior: "smooth"
+                                    });
+                                }
                             });
+                        } else {
+                            groups[i].meslast = msg.name + ":" + msg.Mes;
+                            if(!groups[i].badge){
+                                groups[i].badge=0;
+                            }
+                            groups[i].badge +=1;
+                            this.setState({
+                                groupList: groups,
+                            });
+                        }
+                    });
+                }
+            }
+        }
+        socket.on("PRI"+user, msg => {
+            for(let i=0;i<len;i++){
+                if(groups[i].type==='private' && msg.name === groups[i].name){
+                    groups[i].meslast = msg.name + ":" + msg.Mes;
+                    let keys = this.state.messageList.length;
+                    let messageData = {
+                        id: msg.name + keys,
+                        name: msg.name,
+                        myMes: msg.Mes,
+                        type: "other",
+                        avatar: msg.avatar,
+                        createTime: msg.createTime,
+                    };
+                    const messageList= this.state.messageList.concat(messageData);
+                    if(this.state.mesGroup === groups[i].name){
+                        this.setState({
+                            messageList: messageList,
+                        },() => {
+                            const  height=this.messageBody.scrollHeight-this.messageBody.offsetHeight;
+                            const  altitude= height-this.messageBody.scrollTop;
+                            if(altitude<300){
+                                this.messageBody.scrollTo({
+                                    top: height,
+                                    behavior: "smooth"
+                                });
+                            }
                         });
-                    } else {
-                        groups[i].meslast = msg.name + ":" + msg.Mes;
+                    }else {
+                        if(!groups[i].badge){
+                            groups[i].badge=0;
+                        }
+                        groups[i].badge +=1;
                         this.setState({
                             groupList: groups,
                         });
                     }
-                });
-            }
+                }
 
-        }
+            }
+        });
     };
     groupClick = (item) => {
         const {groupList, mesGroup} = this.state;
         if (mesGroup !== item.name) {
             groupList.map((group, index) => {
-                if (item.name === group.name) {
+                if (item.name+item.type === group.name+group.type) {
                     groupList[index].select = true;
+                    groupList[index].badge = 0;
                 } else {
                     groupList[index].select = false;
                 }
@@ -142,9 +202,27 @@ class App extends React.Component {
                 groupList,
                 mesGroup: item.name,
             },()=>{
-                this.getMessageList()
+                if(item.type ==='group'){
+                    this.setState({
+                        chatWay:'crowd',
+                    },()=>{
+                        this.getMessageList()
+                    });
+
+                }else {
+                    this.setState({
+                        messageList: [],
+                        chatWay:'private',
+                    },()=>{
+                        this.getLocalMessageList(item.name)
+                    });
+
+                }
             })
         }
+    };
+    getLocalMessageList=(name)=>{
+
     };
     getMessageList = () => {
         let data = {
@@ -153,7 +231,7 @@ class App extends React.Component {
         };
         Service.getMessageList(data).then((res) => {
             if(res.status === 0){
-                message.error(res.mes);
+                rcAlert.error(res.mes);
                 return false;
             }
             if (res.status === 1) {
@@ -163,10 +241,17 @@ class App extends React.Component {
                     this.messageBody.scrollTop=this.messageBody.scrollHeight-this.messageBody.offsetHeight;
                 })
 
-            } else if (res.status === "null") {
+            } else if(res.status === 0){
+                rcAlert.error(res.mes);
                 this.setState({
                     messageList: []
-                })
+                });
+                return false;
+            }else {
+                // rcAlert.info(res.mes);
+                this.setState({
+                    messageList: []
+                });
             }
         });
     };
@@ -222,19 +307,18 @@ class App extends React.Component {
     };
     //groupHandle
     groupHandle=(event)=>{
-        message.success("qwe")
-        // const {groupHandle}=this.state;
-        // if(groupHandle){
-        //     this.setState({
-        //         groupHandle:false
-        //     })
-        // }else {
-        //     this.setState({
-        //         groupHandle:true
-        //     })
-        // }
-        // this.stopBubble(event);
-        // document.addEventListener('click',this.groupHandleHide,false);
+        const {groupHandle}=this.state;
+        if(groupHandle){
+            this.setState({
+                groupHandle:false
+            })
+        }else {
+            this.setState({
+                groupHandle:true
+            })
+        }
+        this.stopBubble(event);
+        document.addEventListener('click',this.groupHandleHide,false);
     };
     groupHandleHide=()=>{
         this.setState({
@@ -285,7 +369,7 @@ class App extends React.Component {
                     this.getGroupList("join");
                 });
             }else {
-                message.error(res.mes)
+                rcAlert.error(res.mes)
             }
         });
     };
@@ -321,8 +405,6 @@ class App extends React.Component {
         const data={
             name:groupNameValue
         };
-
-        console.log("addGroup"+data);
         Service.addGroup(data).then((res)=>{
             if(res.status===1){
                 this.setState({
@@ -332,7 +414,7 @@ class App extends React.Component {
                     this.getGroupList("join");
                 });
             }else {
-                message.error(res.mes)
+                rcAlert.error(res.mes)
             }
         });
     };
@@ -367,8 +449,43 @@ class App extends React.Component {
     replace_emoji=(item)=>{
         return emojiTrans.emojishow(item);
     };
+    memberClick=(item)=>{
+        // this.setState({
+        //     memberChatItem:item,
+        //     memberChatModal:true
+        // })
+    };
+    memberChatSubmit=()=>{
+        const item=this.state.memberChatItem;
+        const groupList=this.state.groupList;
+        const privateChat={
+            avatar: item.avatar,
+            meslast: "",
+            name: item.name,
+            type: "private",
+        };
+        let objs = {};
+        let groupLists=groupList.concat(privateChat);
+        groupLists = groupLists.reduce((cur,next) => {
+            objs[next.name] ? "" : objs[next.name] = true && cur.push(next);
+            return cur;
+        },[]);
+        this.setState({
+            groupList:groupLists,
+            mesGroup:item.name,
+            chatWay:'private',
+            messageList: [],
+            memberChatModal:false
+        });
+    } ;
+    memberChatCancel=()=>{
+        this.setState({
+            memberChatModal:false
+        })
+    };
+
     render() {
-        const {groupList, messageList, inputValue,myAvatar,mesGroup,groupCreateModal,groupAddModal,groupNameValue,groupInforShow,groupHandle} = this.state;
+        const {chatWay,groupList, messageList, inputValue,myAvatar,mesGroup,groupCreateModal,groupAddModal,groupNameValue,groupInforShow,groupHandle,memberChatModal} = this.state;
         return (
             <div className="chat-index">
                 <div className="backBlur"/>
@@ -433,11 +550,12 @@ class App extends React.Component {
                                 if (item) {
                                     if (item.type === "group") {
                                         return (
-                                            <div key={item.key} className="chat-groupList"
+                                            <div key={index} className="chat-groupList"
                                                  onClick={() => this.groupClick(item, index)}
                                                  style={{backgroundColor: item.select? "#d6d6d6" : ""}}>
                                                 <div className="group-img">
                                                     <img src={item.avatar}/>
+                                                    {item.badge?<sup className="group-badge">{item.badge}</sup>:""}
                                                 </div>
                                                 <div>
                                                     <div className="group-name">{item.name}</div>
@@ -447,9 +565,12 @@ class App extends React.Component {
                                         )
                                     } else {
                                         return (
-                                            <div key={item.key} className="chat-groupList">
+                                            <div key={index} className="chat-groupList"
+                                                 onClick={() => this.groupClick(item, index)}
+                                                 style={{backgroundColor: item.select? "#d6d6d6" : ""}}>
                                                 <div className="group-img">
                                                     <img src={item.avatar}/>
+                                                    {item.badge?<sup className="group-badge">{item.badge}</sup>:""}
                                                 </div>
                                                 <div>
                                                     <div className="group-name">{item.name}</div>
@@ -466,7 +587,7 @@ class App extends React.Component {
                         <div className="chat-header" >
                             <div className="chat-header-groupName">{mesGroup}</div>
                             <div className=" chat-header-right">
-                                <div onClick={this.groupSettingShow} className="chat-header-set">...</div>
+                                {chatWay === 'crowd'?<div onClick={this.groupSettingShow} className="chat-header-set">...</div>:""}
                             </div>
                         </div>
                         <GroupInfor
@@ -477,44 +598,47 @@ class App extends React.Component {
                         />
                         <div ref={messageBody => this.messageBody = messageBody} className="message-body scrollbar">
                             {messageList.map((item) => {
-                                let createTime = new Date(item.createTime);
-                                if (item.type === "me") {
-                                    return (
-                                        <div key={item.id} className="message-list-me">
-                                            <div className="message-dev">
-                                                <div className="message-info">
-                                                    <div className="message-time">{createTime.getHours() + ':' + createTime.getMinutes()}</div>
+                                if(item){
+                                    const createTime = new Date(item.createTime);
+                                    if (item.type === "me") {
+                                        return (
+                                            <div key={item.id} className="message-list-me">
+                                                <div className="message-dev">
+                                                    <div className="message-info">
+                                                        <div className="message-time">{createTime.getHours() + ':' + createTime.getMinutes()}</div>
+                                                    </div>
+                                                    <div className="message-box">
+                                                        <div className="message-content" dangerouslySetInnerHTML={{  __html:this.replace_emoji(item.myMes) }}/>
+                                                        <div className="message-after"/>
+                                                    </div>
                                                 </div>
-                                                <div className="message-box">
-                                                    <div className="message-content" dangerouslySetInnerHTML={{  __html:this.replace_emoji(item.myMes) }}/>
-                                                    <div className="message-after"/>
+                                                <div className="message-img">
+                                                    <img src={item.avatar}/>
                                                 </div>
                                             </div>
-                                            <div className="message-img">
-                                                <img src={item.avatar}/>
-                                            </div>
-                                        </div>
-                                    )
-                                } else {
-                                    return (
-                                        <div key={item.id} className="message-list-other">
-                                            <div className="message-img">
-                                                <img src={item.avatar}/>
-                                            </div>
+                                        )
+                                    } else {
+                                        return (
+                                            <div key={item.id} className="message-list-other">
+                                                <div className="message-img" onClick={()=>this.memberClick(item)}>
+                                                    <img src={item.avatar}/>
+                                                </div>
 
-                                            <div className="message-dev">
-                                                <div className="message-info">
-                                                    <div className="message-name">{item.name}</div>
-                                                    <div className="message-time">{createTime.getHours() + ':' + createTime.getMinutes()}</div>
-                                                </div>
-                                                <div className="message-box">
-                                                    <div className="message-before"/>
-                                                    <div className="message-content" dangerouslySetInnerHTML={{  __html:this.replace_emoji(item.myMes) }}/>
+                                                <div className="message-dev">
+                                                    <div className="message-info">
+                                                        <div className="message-name">{item.name}</div>
+                                                        <div className="message-time">{createTime.getHours() + ':' + createTime.getMinutes()}</div>
+                                                    </div>
+                                                    <div className="message-box">
+                                                        <div className="message-before"/>
+                                                        <div className="message-content" dangerouslySetInnerHTML={{  __html:this.replace_emoji(item.myMes) }}/>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )
+                                        )
+                                    }
                                 }
+
                             })}
                         </div>
                         <div className="message-in">
@@ -528,6 +652,16 @@ class App extends React.Component {
                         </div>
                     </div>
                 </div>
+                <Modal
+                    // title="发起聊天"
+                    visible={memberChatModal}
+                    onOk={this.memberChatSubmit}
+                    onCancel={this.memberChatCancel}
+                >
+                    <div>
+                        发起聊天
+                    </div>
+                </Modal>
             </div>
         )
     }

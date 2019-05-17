@@ -22,6 +22,7 @@ module.exports={
             sendMessage.Mes=ctx.mes;
             sendMessage.group=ctx.group;
             sendMessage.name=name;
+            sendMessage.createTime= new Date;
             await surveyDao.messageSave(sendMessage);
             let avatars= await userDao.userAvatar(name);
             sendMessage.avatar=avatars[0]._doc.avatar;
@@ -29,15 +30,16 @@ module.exports={
             socket.broadcast.emit(ctx.group,sendMessage);
 
         });
-        await socket.on('privatechat', async (ctx) =>{
+        await socket.on('privateChat', async (ctx) =>{
             let sendMessage={};
             sendMessage.Mes=ctx.mes;
             sendMessage.user=ctx.senduser;
             sendMessage.name=name;
+            sendMessage.createTime= new Date;
             let avatars= await userDao.userAvatar(name);
             sendMessage.avatar=avatars[0]._doc.avatar;
             //给除了自己以外的客户端广播消息
-            socket.broadcast.emit("pri"+ctx.acceptuser,sendMessage);
+            socket.broadcast.emit("PRI"+ctx.acceptuser,sendMessage);
         });
     }
 };

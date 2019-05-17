@@ -76,7 +76,7 @@ router.post('/messageList', async (ctx, next) => {
         res.mes="success";
     }else if(reslen===0){
         res.status=2;
-        res.mes="无消息列表失败！";
+        res.mes="消息列表为空！";
     }else{
         res.status=0;
         res.mes="获取消息列表失败！";

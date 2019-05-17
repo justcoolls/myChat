@@ -91,9 +91,10 @@
                 left: 52px;
                 overflow: hidden;
                 transition: width 0.5s;
-                //-moz-transition: width 0.2s; /* Firefox 4 */
-                //-webkit-transition: width 0.2s; /* Safari 和 Chrome */
-                //-o-transition: width 0.2s; /* Opera */
+                -moz-transition: width 0.2s; /* Firefox 4 */
+                -webkit-transition: width 0.2s; /* Safari 和 Chrome */
+                -o-transition: width 0.2s; /* Opera */
+                z-index: 10;
                 .group-body{
                     display: flex;
                     align-items: flex-end;
@@ -128,12 +129,37 @@
                 overflow: hidden;
                 width: 238px;
                 .group-img{
+                    position: relative;
+                    display: inline-block;
                     margin: 5px;
                     img{
                         width: 40px;
                         height: 40px;
                         border-radius: 12px;
                         overflow: hidden;
+                    }
+                    .group-badge{
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        -webkit-transform: translate(30%, -35%);
+                        -ms-transform: translate(30%, -35%);
+                        transform: translate(30%, -35%);
+                        -webkit-transform-origin: 100% 0%;
+                        -ms-transform-origin: 100% 0%;
+                        transform-origin: 100% 0%;
+                        z-index: 10;
+                        min-width: 18px;
+                        height: 18px;
+                        color: #fff;
+                        font-weight: 100;
+                        font-size: 6px;
+                        line-height: 20px;
+                        white-space: nowrap;
+                        text-align: center;
+                        background: #ec0410;
+                        border-radius: 10px;
+                        box-sizing: border-box;
                     }
                 }
                 .group-name{
@@ -202,7 +228,7 @@
                 padding: 6px;
                 .message-list-other{
                     display: flex;
-                    padding: 35px 0;
+                    padding: 10px 0;
                     .message-img{
                         margin-right: 12px;
                         margin-top: 18px;
@@ -228,7 +254,7 @@
                             font-family: local-file,Arial,Verdana,"serif";
                             color: #eee;
                             .message-name{
-                                margin-left: 12px;
+                                margin-left: 20px;
                                 margin-right: 8px;
                             }
                             .message-time{
@@ -269,7 +295,7 @@
                 }
                 .message-list-me{
                     display: flex;
-                    padding: 35px 0;
+                    padding: 10px 0;
                     justify-content: flex-end;
                     .message-img{
                         margin-left: 12px;

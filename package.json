@@ -2,12 +2,16 @@
   "name": "justCool",
   "version": "0.0.1",
   "description": "myChat",
-  "main": "index.js",
+  "main": "bin/www",
   "scripts": {
     "dev": "webpack --env=development --progress --watch",
     "start": "webpack --p --env=development --progress",
     "build": "webpack --p --env=production --progress",
     "server": "node bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justcoolls/myChat.git"
   },
   "author": "ls",
   "license": "MIT",
@@ -23,7 +27,7 @@
     "koa-send": "^3.2.0",
     "koa-static": "^3.0.0",
     "koa-views": "^5.2.0",
-    "rc-alert": "^1.0.4",
+    "rc-alert": "^1.1.1",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-redux": "^5.0.6",
@@ -31,6 +35,7 @@
     "socket.io": "^2.0.3"
   },
   "devDependencies": {
+    "koa-bodyparser": "^3.2.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
     "babel-helpers": "^6.24.1",
@@ -52,7 +57,6 @@
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "html-webpack-plugin": "^3.2.0",
     "jsonwebtoken": "^8.1.0",
-    "koa-bodyparser": "^3.2.0",
     "koa-jwt": "^3.3.0",
     "less": "^3.9.0",
     "less-loader": "^4.0.3",
