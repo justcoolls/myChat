@@ -16,3 +16,7 @@ message.warn(content, [duration], onClose)
 | content | 提示内容 | string/ReactNode | 无 |
 | duration |自动关闭的延时，单位秒 | number | 3秒 |
 | onClose |关闭时触发的回调函数 | Function | 无 |
+
+---
+
+示例：http://liazm.com/#/rcAlert
