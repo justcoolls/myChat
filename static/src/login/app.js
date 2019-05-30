@@ -158,11 +158,11 @@ class App extends React.Component {
     registerSubmit = () => {
         const {regUser, regPassword,confirmPassword} = this.state;
         if(regUser.length<3){
-            console.info('用户名不能少于三位数');
+            rcAlert.error('用户名不能少于三位数');
             return false
         }
         if(regPassword !== confirmPassword){
-            console.info('两次密码不同');
+            rcAlert.error('两次密码不同');
             return false
         }
         const data = {
